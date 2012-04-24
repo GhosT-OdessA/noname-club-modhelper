@@ -1,9 +1,11 @@
 // ==UserScript==
-// @name          NoNaMe-Club ModHelp
-// @namespace     http://userscripts.org
+// @name          NoNaMe-Club ModHelper
+// @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы
-// @author        Kaener
 // @version       1.91
+// @author        Kaener
+// @homepage      https://github.com/kaener/noname-club-modhelper
+// @updateURL     https://raw.github.com/kaener/noname-club-modhelper/master/modhelper.meta.js
 // @include       http://*.nnm-club.ru/forum/modcp.php*
 // @include       http://nnm-club.ru/forum/modcp.php*
 // @include       https://*.nnm-club.ru/forum/modcp.php*
@@ -16,7 +18,7 @@
 // ==/UserScript==
 // 
 
-var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
+var checkApprove = false; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
 
 var isLoaded = false;
 

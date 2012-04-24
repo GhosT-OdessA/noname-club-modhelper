@@ -1,9 +1,11 @@
 // ==UserScript==
-// @name          NoNaMe-Club ModHelp
-// @namespace     http://userscripts.org
-// @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы
-// @author        Kaener
+// @name          NoNaMe-Club ModHelper (Debug)
+// @namespace     NoNaMe-Club.Scripts
+// @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Debug-версия
 // @version       1.91
+// @author        Kaener
+// @homepage      https://github.com/kaener/noname-club-modhelper
+// @updateURL     https://raw.github.com/kaener/noname-club-modhelper/master/modhelper.dbg.meta.js
 // @include       http://*.nnm-club.ru/forum/modcp.php*
 // @include       http://nnm-club.ru/forum/modcp.php*
 // @include       https://*.nnm-club.ru/forum/modcp.php*
@@ -16,14 +18,18 @@
 // ==/UserScript==
 // 
 
-var checkApprove = false; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
+var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
+
+console.log('checkApprove = ' + checkApprove);
 
 var isLoaded = false;
 
 function modHelp() {
+  console.log('modhelp start');
 
   var done = false; 
   var tid = document.getElementsByName('t')[0].value;
+  console.log('tid: '+tid);
 
   var temp = { 
     'Мусорник': 670,
@@ -83,41 +89,56 @@ function modHelp() {
   var newTopicName      = 'Выделено из темы ' + tid; //!- название темы при выделении, где tid -- id темы
   var leaveMsgOnMv      = true;                     //!- оставлять сообщение о переносе, true -- да, false -- нет
   var addMsgToOld       = false;                     //!- оставлять сообщение о разделении в старой теме, true -- да, false -- нет
-  var addMsgToNew       = true;                     //!- оставлять сообщение о разделении в новой теме, true -- да, false -- нет
+  var addMsgToNew       = true;                      //!- оставлять сообщение о разделении в новой теме, true -- да, false -- нет
 
   function findGroup(old) {
+    console.log('find group by old f: ' + old);
     for (var key in map) {
+      console.log('trying key: ' + key);
       if (map[key].indexOf(old) > -1) {
+        console.log('key ' + key + ' finded!');
         return key;
       }
     }
+    console.log('no group for this forum');
     return -1;
   }
 
   function moveApprovedToF(old) {
+    console.log('move approved from: ' + old);
     var key = findGroup(old);
+    console.log('finded group for this: ' + key);
     if (key !== -1 && typeof(archive[key]) !== 'undefined') {
+      console.log('return archive f:' + archive[key]);
       return archive[key];
     } else {
+      console.log('return default archive f:' +  moveApprovedTo);
       return moveApprovedTo;
     }
   }
 
   function moveNotApprovedToF(old) {
+    console.log('Move not approved from: ' + old);
     var key = findGroup(old);
+    console.log('finded group for this: ' + key);
     if (key !== -1 && typeof(temp[key]) !== 'undefined') {
+      console.log('return temp f:' + temp[key]);
       return temp[key];
     } else {
+      console.log('return default archive f:' +  moveNotApprovedTo);
       return moveNotApprovedTo;
     }
   }
 
   function setThemeName() {
+    console.log('set theme name func');
     document.getElementsByName('subject')[0].value =  newTopicName;
     document.getElementsByName('subject')[0].onfocus = function() { if(!done) this.value = ''; done = true; }
+    console.log('set theme name func done here');
   }
 
   function setDest(id) {
+    console.log('Sed dest: ' + id);
     var selectElem = document.getElementsByTagName('select');
     if (selectElem.length > 0) {
         selectElem[0].value = id;
@@ -146,11 +167,13 @@ function modHelp() {
           url: '/forum/viewtopic.php?t=' + tid,
           success: function(result) {
               if(result.isOk === false)
-                  console.debug(result.message);
+                  console.log(result.message);
               else {
                   approved = $('tr.row1 > td.genmed', result);
                   if (typeof(approved) !== 'undefined' && approved.length > 11) {
+                    console.log(approved[11].innerHTML);
                     approved = approved[11].innerHTML.indexOf("Оформление проверено ") > -1;
+                    console.log('so approved: ' + approved);
                   } else {
                     approved = false;
                   }
@@ -158,40 +181,54 @@ function modHelp() {
           },
           async:   false
       });
+      console.log('retrun approved: ' + approved);
       return approved;
   }
 
   function formUpdate(action) {
     switch(action) {
       case 'onmove':
+        console.log('on move form update');
         var msgMoveElem = document.getElementById('insert_msg');
+        console.log('set ' + leaveMsgOnMv + ' to elem ' + msgMoveElem);
         msgMoveElem.checked = leaveMsgOnMv;
         var msgElem = document.getElementById('move_bot');
         msgElem.style.display = leaveMsgOnMv?'block':'none';
         break;
       case 'onsplit':
+        console.log('on split form update');
         var msgSplitElemOld = document.getElementById('after_split_to_old');
         var msgSplitElemNew = document.getElementById('after_split_to_new');
+        console.log('set ' + addMsgToOld + ' to elem ' + msgSplitElemOld);
+        console.log('set ' + addMsgToNew + ' to elem ' + msgSplitElemNew);
         msgSplitElemOld.checked = addMsgToOld;
         msgSplitElemNew.checked = addMsgToNew;
         break;
       default:
         break;
     }
+    console.log('done form update');
   }
 
   var oldForumElems = document.getElementsByName('f');
   var old = parseInt(oldForumElems[oldForumElems.length - 1].value);
+  console.log('old forum: ' + old);
 
   if (onSplit()) {
+    console.log('split!')
     formUpdate('onsplit');
+    console.log('setThemeName');
     setThemeName();
+    console.log('setDest');
     setDest(splitTo);
   } else if (onMove()) {
+    console.log('move!');
     formUpdate('onmove');
     if (checkApprove && themeIsApproved()) {
+      console.log('approved!');
       setDest(moveApprovedToF(old));
     } else {
+      console.log('not approved!');
       setDest(moveNotApprovedToF(old));
     }
   }
@@ -199,14 +236,18 @@ function modHelp() {
 
 function checkJquery() {
   if(!checkApprove) { //if we don't need jQuery
+    console.log('we don\'t need jQuery');
     modHelp();
   } else if (typeof(window.jQuery) !== 'undefined') {// Opera!
+    console.log('Opera!');
     $ = window.jQuery;
     modHelp();
   } else if (typeof(unsafeWindow.jQuery) !== 'undefined') {  // Firefox!
+    console.log('Firefox!');
     $ = unsafeWindow.jQuery;
     modHelp();
   } else { // Chrome and others
+    console.log('Chrome!');
     var script = document.createElement("script");
     script.textContent = "var checkApprove = " + checkApprove + ";\nvar $ = window.jQuery;\n" + "(" + modHelp.toString() + ")();";
     document.body.appendChild(script);
