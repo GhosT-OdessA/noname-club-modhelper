@@ -2,7 +2,7 @@
 // @name          NoNaMe-Club ModHelper (Debug)
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Debug-версия
-// @version       1.91
+// @version       1.92
 // @author        Kaener
 // @homepage      https://github.com/kaener/noname-club-modhelper
 // @updateURL     https://raw.github.com/kaener/noname-club-modhelper/master/modhelper.dbg.meta.js
@@ -185,10 +185,39 @@ function modHelp() {
       return approved;
   }
 
-  function formUpdate(action) {
+  function isArchive(forum) {
+    for (var i in archive) {
+      if (archive.hasOwnProperty(i)){ // skip inherited properties
+        if (archive[i] === forum) {
+          console.log('Is an archive!');
+          return true;
+        }
+      }
+    }
+    console.log('Not an archive!');
+    return false;
+  }
+
+  function fromArchive() {
+    var formElem = Array.prototype.filter.apply(document.forms, [function (elem) {
+      return (elem && elem.action && elem.action == 'http://nnm-club.ru/forum/modcp.php');
+    }])[0];
+    formElem.addEventListener('submit', function(e) {
+      if (!confirm('Действительно хотите перенести из Архива?')) {
+        console.log('stop from submitting!');
+        if (e.preventDefault) {
+          e.preventDefault();
+        }
+        e.returnValue = false;
+      }
+    }, false);
+  }
+
+  function formUpdate(action, options) {
     switch(action) {
       case 'onmove':
         console.log('on move form update');
+        if (isArchive(options.forum)) fromArchive();
         var msgMoveElem = document.getElementById('insert_msg');
         console.log('set ' + leaveMsgOnMv + ' to elem ' + msgMoveElem);
         msgMoveElem.checked = leaveMsgOnMv;
@@ -223,7 +252,7 @@ function modHelp() {
     setDest(splitTo);
   } else if (onMove()) {
     console.log('move!');
-    formUpdate('onmove');
+    formUpdate('onmove', {'forum': old});
     if (checkApprove && themeIsApproved()) {
       console.log('approved!');
       setDest(moveApprovedToF(old));

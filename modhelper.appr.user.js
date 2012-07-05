@@ -2,7 +2,7 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       1.91
+// @version       1.92
 // @author        Kaener
 // @homepage      https://github.com/kaener/noname-club-modhelper
 // @updateURL     https://raw.github.com/kaener/noname-club-modhelper/master/modhelper.appr.meta.js
@@ -163,9 +163,35 @@ function modHelp() {
       return approved;
   }
 
-  function formUpdate(action) {
+  function isArchive(forum) {
+    for (var i in archive) {
+      if (archive.hasOwnProperty(i)){ // skip inherited properties
+        if (archive[i] === forum) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function fromArchive() {
+    var formElem = Array.prototype.filter.apply(document.forms, [function (elem) {
+      return (elem && elem.action && elem.action == 'http://nnm-club.ru/forum/modcp.php');
+    }])[0];
+    formElem.addEventListener('submit', function(e) {
+      if (!confirm('Действительно хотите перенести из Архива?')) {
+        if (e.preventDefault) {
+          e.preventDefault();
+        }
+        e.returnValue = false;
+      }
+    }, false);
+  }
+
+  function formUpdate(action, options) {
     switch(action) {
       case 'onmove':
+        if (isArchive(options.forum)) fromArchive();
         var msgMoveElem = document.getElementById('insert_msg');
         msgMoveElem.checked = leaveMsgOnMv;
         var msgElem = document.getElementById('move_bot');
@@ -190,7 +216,7 @@ function modHelp() {
     setThemeName();
     setDest(splitTo);
   } else if (onMove()) {
-    formUpdate('onmove');
+    formUpdate('onmove', {'forum': old});
     if (checkApprove && themeIsApproved()) {
       setDest(moveApprovedToF(old));
     } else {
