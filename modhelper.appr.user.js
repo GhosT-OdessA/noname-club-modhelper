@@ -2,7 +2,7 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       1.92
+// @version       1.93
 // @author        Kaener
 // @homepage      https://github.com/kaener/noname-club-modhelper
 // @updateURL     https://raw.github.com/kaener/noname-club-modhelper/master/modhelper.appr.meta.js
@@ -176,7 +176,7 @@ function modHelp() {
 
   function fromArchive() {
     var formElem = Array.prototype.filter.apply(document.forms, [function (elem) {
-      return (elem && elem.action && elem.action == 'http://nnm-club.ru/forum/modcp.php');
+      return (elem && elem.action && elem.action.indexOf('modcp.php') > -1);
     }])[0];
     formElem.addEventListener('submit', function(e) {
       if (!confirm('Действительно хотите перенести из Архива?')) {

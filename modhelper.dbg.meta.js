@@ -2,7 +2,7 @@
 // @name          NoNaMe-Club ModHelper 
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Debug-версия
-// @version       1.92
+// @version       1.93
 // @author        Kaener
 // @homepage      https://github.com/kaener/noname-club-modhelper
 // @updateURL     https://raw.github.com/kaener/noname-club-modhelper/master/modhelper.dbg.meta.js
@@ -17,4 +17,4 @@
 // @run-at        document-start
 // ==/UserScript==
 // 
-var VERSION = 1.92;
+var VERSION = 1.93;
