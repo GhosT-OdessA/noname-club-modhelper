@@ -6,7 +6,7 @@
 // @original author	Kaener
 // @author        odessky
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
-// @updateURL     https://raw.github.com/GhosT-OdessA/noname-club-modhelper/testing/modhelper_full.appr.meta.js
+// @updateURL     https://raw.github.com/GhosT-OdessA/noname-club-modhelper/master/modhelper_full.appr.meta.js
 // @include       http://*.nnm-club.ru/forum/modcp.php*
 // @include       http://nnm-club.ru/forum/modcp.php*
 // @include       https://*.nnm-club.ru/forum/modcp.php*
