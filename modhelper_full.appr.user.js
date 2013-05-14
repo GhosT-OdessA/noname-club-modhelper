@@ -15,7 +15,6 @@
 // @match         http://nnm-club.ru/forum/modcp.php*
 // @match         https://*.nnm-club.ru/forum/modcp.php*
 // @match         https://nnm-club.ru/forum/modcp.php*
-// @run-at        document-start
 // ==/UserScript==
 // 
 
