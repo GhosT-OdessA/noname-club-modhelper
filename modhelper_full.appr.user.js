@@ -91,6 +91,7 @@ function modHelp() {
   var leaveMsgOnMv      = true;                     //!- оставлять сообщение о переносе, true -- да, false -- нет
   var addMsgToOld       = false;                     //!- оставлять сообщение о разделении в старой теме, true -- да, false -- нет
   var addMsgToNew       = true;                     //!- оставлять сообщение о разделении в новой теме, true -- да, false -- нет
+  var newTopicNameMode  = true;                    //!- Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>
   var text1 = 'На трекере доступна новая версия';
   var text2 = 'Требуется доработка по замечаниям модератора';
   
@@ -129,10 +130,15 @@ function modHelp() {
     }
   }
 
-  function setThemeName() {
-    document.getElementsByName('subject')[0].value =  newTopicName;
+   function setThemeName() {
+    if (newTopicNameMode) {
+       document.getElementsByName('subject')[0].value = newTopicName;
+    }
+    else {
+       document.getElementsByName('subject')[0].value = document.getElementsByClassName('postdetails')[0].innerHTML.substr(32);
+    }
     document.getElementsByName('subject')[0].onfocus = function() { if(!done) this.value = ''; done = true; }
-  }
+   }
 
   function setDest(id) {
     var selectElem = document.getElementsByTagName('select');
