@@ -4,9 +4,10 @@
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
 // @version       2.0
 // @original author	Kaener
-// @author        odessky
+// @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
 // @updateURL     https://raw.github.com/GhosT-OdessA/noname-club-modhelper/master/modhelper_full.appr.meta.js
+// @downloadURL   https://raw.github.com/GhosT-OdessA/noname-club-modhelper/master/modhelper_full.appr.js
 // @include       http://*.nnm-club.ru/forum/modcp.php*
 // @include       http://nnm-club.ru/forum/modcp.php*
 // @include       https://*.nnm-club.ru/forum/modcp.php*
@@ -90,7 +91,7 @@ function modHelp() {
   var leaveMsgOnMv      = true;                     //!- оставлять сообщение о переносе, true -- да, false -- нет
   var addMsgToOld       = false;                     //!- оставлять сообщение о разделении в старой теме, true -- да, false -- нет
   var addMsgToNew       = true;                     //!- оставлять сообщение о разделении в новой теме, true -- да, false -- нет
-  var newTopicNameMode  = true;                    //!- Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>
+  var newTopicNameMode  = false;                    //!- Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>
   var text1 = 'На трекере доступна новая версия';
   var text2 = 'Требуется доработка по замечаниям модератора';
   
