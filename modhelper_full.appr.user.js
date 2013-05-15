@@ -135,7 +135,7 @@ function modHelp() {
        document.getElementsByName('subject')[0].value = newTopicName;
     }
     else {
-       document.getElementsByName('subject')[0].value = document.getElementsByClassName('postdetails')[0].innerHTML.substr(32);
+       document.getElementsByName('subject')[0].value = 'Выделено из темы ' + document.getElementsByClassName('postdetails')[0].innerHTML.substr(32);
     }
     document.getElementsByName('subject')[0].onfocus = function() { if(!done) this.value = ''; done = true; }
    }
