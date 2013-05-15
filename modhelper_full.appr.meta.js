@@ -2,7 +2,7 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.0
+// @version       2.0.001
 // @original author	Kaener
 // @author        odessky
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
@@ -17,4 +17,4 @@
 // @match         https://nnm-club.ru/forum/modcp.php*
 // ==/UserScript==
 //
-var VERSION = 2.0;
+var VERSION = 2.0.001;
