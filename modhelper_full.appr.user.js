@@ -23,11 +23,11 @@
 // пользователем для индивидуальной настройки под себя.
 
 //Для очистки ошибочно введённых данных раскомментировать следующую строчку :
-//	delete localStorage.teatLocalStorage;
+//	delete localStorage.testLocalStorage;
 
 
 
-	if (localStorage.teatLocalStorage == null) {
+	if (localStorage.testLocalStorage == null) {
         alert( 'Внимание!\n Сейчас будет произведена настройка параметров Помощника модератора. Внимательно прочитайте вопросы и ответьте на них только указанными вариантами ответа, иначе это приведёт к ошибкам работы скрипта');
 		localStorage.leaveMsgOnMv = prompt ("Оставлять сообщение о переносе ( делает активным поле ввода текста примечания )? Если Да - впишите true, Нет - false."," ");
         localStorage.addMsgToOld = prompt ("Оставлять сообщение о разделении в старой теме? Если Да - впишите true, Нет - false."," ");
@@ -35,7 +35,7 @@
         localStorage.newTopicNameMode = prompt ("Условие формирования названия новой темы при разделении темы : \n true - Выделено из темы + ID (цифровое значение) темы, false - Выделено из темы + <Название темы текстом>"," ");
 		localStorage.textToArchive = prompt ("Введите текст причины переноса темы в Архив"," ");
 		localStorage.textToTemp = prompt ("Введите текст причины переноса темы в Темп"," ");
-        localStorage.teatLocalStorage = 1 ;
+        localStorage.testLocalStorage = 1 ;
 	}
 var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
 
@@ -115,17 +115,12 @@ function modHelp() {
 //  var text2 = 'Требуется доработка по замечаниям модератора';
 	
     var leaveMsgOnMv = localStorage.leaveMsgOnMv ;
-    console.log('leaveMsgOnMv = ' + leaveMsgOnMv ) ;
     var addMsgToOld = localStorage.addMsgToOld ;
-    console.log('addMsgToOld = ' + addMsgToOld);
     var addMsgToNew = localStorage.addMsgToNew ;
-    console.log('leaveMsgOnMv = ' + leaveMsgOnMv );    
     var newTopicNameMode = localStorage.newTopicNameMode ;
-    console.log('newTopicNameMode = ' + newTopicNameMode );
     var textToArchive = localStorage.textToArchive ;
-    console.log('textToArchive = ' + textToArchive );
     var textToTemp = localStorage.textToTemp ;
-    console.log('textToTemp = ' + textToTemp );
+
     
     
   function setTextToArchive() {
