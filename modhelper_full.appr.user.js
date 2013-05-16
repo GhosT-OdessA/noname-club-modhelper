@@ -2,7 +2,7 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.0.0.3
+// @version       1.0
 // @original author	Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
@@ -19,30 +19,16 @@
 // ==/UserScript==
 // 
 
-  if ( localStorage.teatLocalStorage == null ) {
-      localStorage.testLocalStorage = 1;
-  	 	var leaveMsgOnMvUser = prompt ("Оставлять сообщение о переносе?  Да , Нет :"," ");  //!- оставлять сообщение о переносе, true -- да, false -- нет
-      if ( leaveMsgOnMvUser == ( 'Да' || 'да')) { localStorage.setItem('leaveMsgOnMv', true); } else { localStorage.setItem('leaveMsgOnMv', false); }
-      var addMsgToOldUser = prompt ("Добавить сообщение в старую тему ? Да, Нет :"," ");
-      if ( leaveMsgOnMvUser == ( 'Да' || 'да')) { localStorage.setItem('leaveMsgOnMv', true); } else { localStorage.setItem('leaveMsgOnMv', false); }
-		var addMsgToNewUser = prompt ("Добавить сообщение в старую тему ? Да - true, Нет - false :"," ");
-		var newTopicNameModeUser = prompt ("Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>"," ");
+	if (localStorage.teatLocalStorage == null) {
+        alert( 'Внимание!\n Сейчас будет произведена настройка параметров Помощника модератора. Внимательно прочитайте вопросы и ответьте на них только указанными вариантами ответа, иначе это приведёт к ошибкам работы скрипта');
+		localStorage.leaveMsgOnMv = prompt ("Оставлять сообщение о переносе? Если Да - впишите true, Нет - false."," ");  //!- оставлять сообщение о переносе, true -- да, false -- нет
+		localStorage.addMsgToOld = prompt ("Добавить сообщение в старую тему ? Если Да - впишите true, Нет - false."," ");
+		localStorage.addMsgToNew = prompt ("Добавить сообщение в новую тему ? Если Да - впишите true, Нет - false.:"," ");
+		localStorage.newTopicNameMode = prompt ("Режим формирования названия новой темы при разделении, <br/> true - Выделено из темы + ID темы, false - Выделено из темы + <Название темы>"," ");
+		localStorage.textToArchive = prompt ("Введите текст причины переноса темы в Архив"," ");
+		localStorage.textToTemp = prompt ("Введите текст причины переноса темы в Темп"," ");
+        localStorage.teatLocalStorage = 1 ;
 	}
-/*
-localStorage.setItem('testLocalStorage', 1);
-localStorage.setItem('leaveMsgOnMv');
-localStorage.setItem('leaveMsgOnMv', true);
-localStorage.setItem('addMsgToOld', false);
-localStorage.setItem('addMsgToNew', true);
-localStorage.setItem('newTopicNameMode', false);
-localStorage.setItem('text1', 'На трекере доступна новая версия');
-localStorage.setItem('text2', 'Требуется доработка по замечаниям модератора');
-
-localStorage.setItem('addMsgToOld', false);prompt ("Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>"," ")
-*/
-
-var variable_name = prompt("Текст на сером фоне","Текст в строке ввода")
-
 var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
 
 var isLoaded = false;
@@ -122,24 +108,24 @@ function modHelp() {
 	
     var leaveMsgOnMv = localStorage.leaveMsgOnMv ;
     console.log('leaveMsgOnMv = ' + leaveMsgOnMv ) ;
-    var addMsgToOld = localStorage.getItem('addMsgToOld');
+    var addMsgToOld = localStorage.addMsgToOld ;
     console.log('addMsgToOld = ' + addMsgToOld);
-    var addMsgToNew = localStorage.addMsgToNew );
+    var addMsgToNew = localStorage.addMsgToNew ;
     console.log('leaveMsgOnMv = ' + leaveMsgOnMv );    
     var newTopicNameMode = localStorage.newTopicNameMode ;
     console.log('newTopicNameMode = ' + newTopicNameMode );
-    var text1 = localStorage.text1;
-    console.log('text1 = ' + text1 );
-    var text2 = localStorage.text2 ;
-    console.log('text2 = ' + text2 );
+    var textToArchive = localStorage.textToArchive ;
+    console.log('textToArchive = ' + textToArchive );
+    var textToTemp = localStorage.textToTemp ;
+    console.log('textToTemp = ' + textToTemp );
     
     
-  function SetText1() {
-    document.getElementsByClassName('post')[0].value = text1;
+  function setTextToArchive() {
+    document.getElementsByClassName('post')[0].value = textToArchive;
   }
   
-  function SetText2() {
-    document.getElementsByClassName('post')[0].value = text2;
+  function setTextToTemp() {
+    document.getElementsByClassName('post')[0].value = textToTemp;
   }
   
   function findGroup(old) {
@@ -279,10 +265,10 @@ function modHelp() {
   } else if (onMove()) {
     formUpdate('onmove', {'forum': old});
     if (checkApprove && themeIsApproved()) {
-		SetText1();
+		setTextToArchive();
 	    setDest(moveApprovedToF(old));
     } else {
-      SetText2();
+      setTextToTemp();
 	  setDest(moveNotApprovedToF(old));
     }
   }
