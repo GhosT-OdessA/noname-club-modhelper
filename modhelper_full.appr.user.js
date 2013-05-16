@@ -19,9 +19,29 @@
 // ==/UserScript==
 // 
 
-//localStorage.setItem('newTopicNameMode', true);
-//localStorage.setItem('text1', 'На трекере доступна новая версия');
-//localStorage.setItem('text2', 'Требуется доработка по замечаниям модератора');
+  if ( localStorage.teatLocalStorage == null ) {
+      localStorage.testLocalStorage = 1;
+  	 	var leaveMsgOnMvUser = prompt ("Оставлять сообщение о переносе?  Да , Нет :"," ");  //!- оставлять сообщение о переносе, true -- да, false -- нет
+      if ( leaveMsgOnMvUser == ( 'Да' || 'да')) { localStorage.setItem('leaveMsgOnMv', true); } else { localStorage.setItem('leaveMsgOnMv', false); }
+      var addMsgToOldUser = prompt ("Добавить сообщение в старую тему ? Да, Нет :"," ");
+      if ( leaveMsgOnMvUser == ( 'Да' || 'да')) { localStorage.setItem('leaveMsgOnMv', true); } else { localStorage.setItem('leaveMsgOnMv', false); }
+		var addMsgToNewUser = prompt ("Добавить сообщение в старую тему ? Да - true, Нет - false :"," ");
+		var newTopicNameModeUser = prompt ("Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>"," ");
+	}
+/*
+localStorage.setItem('testLocalStorage', 1);
+localStorage.setItem('leaveMsgOnMv');
+localStorage.setItem('leaveMsgOnMv', true);
+localStorage.setItem('addMsgToOld', false);
+localStorage.setItem('addMsgToNew', true);
+localStorage.setItem('newTopicNameMode', false);
+localStorage.setItem('text1', 'На трекере доступна новая версия');
+localStorage.setItem('text2', 'Требуется доработка по замечаниям модератора');
+
+localStorage.setItem('addMsgToOld', false);prompt ("Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>"," ")
+*/
+
+var variable_name = prompt("Текст на сером фоне","Текст в строке ввода")
 
 var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
 
@@ -93,19 +113,25 @@ function modHelp() {
   var moveApprovedTo    = temp['Мусорник'];          //!- в этот форум переносим, если мы не узнали исходный форум, но проверяли и тема одобрена
   var splitTo           = temp['Мусорник'];          //!- в этот форум выделяем
   var newTopicName      = 'Выделено из темы ' + tid; //!- название темы при выделении, где tid -- id темы
-  var leaveMsgOnMv      = true;                     //!- оставлять сообщение о переносе, true -- да, false -- нет
-  var addMsgToOld       = false;                     //!- оставлять сообщение о разделении в старой теме, true -- да, false -- нет
-  var addMsgToNew       = true;                     //!- оставлять сообщение о разделении в новой теме, true -- да, false -- нет
+//  var leaveMsgOnMv      = true;                     //!- оставлять сообщение о переносе, true -- да, false -- нет
+//  var addMsgToOld       = false;                     //!- оставлять сообщение о разделении в старой теме, true -- да, false -- нет
+//  var addMsgToNew       = true;                     //!- оставлять сообщение о разделении в новой теме, true -- да, false -- нет
 //  var newTopicNameMode  = false;                    //!- Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>
 //  var text1 = 'На трекере доступна новая версия';
 //  var text2 = 'Требуется доработка по замечаниям модератора';
-
-    var newTopicNameMode = localStorage.getItem('newTopicNameMode');
-    console.log('newTopicNameMode = ' + newTopicNameMode);
-    var text1 = localStorage.getItem('text1');
-    console.log('text1 = ' + text1);
-    var text2 = localStorage.getItem('text2');
-    console.log('text2 = ' + text2);
+	
+    var leaveMsgOnMv = localStorage.leaveMsgOnMv ;
+    console.log('leaveMsgOnMv = ' + leaveMsgOnMv ) ;
+    var addMsgToOld = localStorage.getItem('addMsgToOld');
+    console.log('addMsgToOld = ' + addMsgToOld);
+    var addMsgToNew = localStorage.addMsgToNew );
+    console.log('leaveMsgOnMv = ' + leaveMsgOnMv );    
+    var newTopicNameMode = localStorage.newTopicNameMode ;
+    console.log('newTopicNameMode = ' + newTopicNameMode );
+    var text1 = localStorage.text1;
+    console.log('text1 = ' + text1 );
+    var text2 = localStorage.text2 ;
+    console.log('text2 = ' + text2 );
     
     
   function SetText1() {
