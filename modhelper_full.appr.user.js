@@ -2,7 +2,7 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.0.0.1
+// @version       2.0.0.2
 // @original author	Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
@@ -40,6 +40,7 @@ function modHelp() {
     'sndbx':    149,
     'soft':     149,
     'tech':     932,
+    'serials':  145,
     'video':    145,
     'Мусорник': 670,
   };
