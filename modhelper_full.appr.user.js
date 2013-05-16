@@ -24,7 +24,6 @@
 //localStorage.setItem('text2', 'Требуется доработка по замечаниям модератора');
 
 var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
- console.log('checkApprove = ' + checkApprove);
 
 var isLoaded = false;
 
