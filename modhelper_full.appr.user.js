@@ -21,10 +21,10 @@
 
 	if (localStorage.teatLocalStorage == null) {
         alert( 'Внимание!\n Сейчас будет произведена настройка параметров Помощника модератора. Внимательно прочитайте вопросы и ответьте на них только указанными вариантами ответа, иначе это приведёт к ошибкам работы скрипта');
-		localStorage.leaveMsgOnMv = prompt ("Оставлять сообщение о переносе? Если Да - впишите true, Нет - false."," ");  //!- оставлять сообщение о переносе, true -- да, false -- нет
-		localStorage.addMsgToOld = prompt ("Добавить сообщение в старую тему ? Если Да - впишите true, Нет - false."," ");
-		localStorage.addMsgToNew = prompt ("Добавить сообщение в новую тему ? Если Да - впишите true, Нет - false.:"," ");
-		localStorage.newTopicNameMode = prompt ("Режим формирования названия новой темы при разделении, <br/> true - Выделено из темы + ID темы, false - Выделено из темы + <Название темы>"," ");
+		localStorage.leaveMsgOnMv = prompt ("Оставлять сообщение о переносе ( делает активным поле ввода текста примечания )? Если Да - впишите true, Нет - false."," ");
+        localStorage.addMsgToOld = prompt ("Оставлять сообщение о разделении в старой теме? Если Да - впишите true, Нет - false."," ");
+		localStorage.addMsgToNew = prompt ("Добавлять сообщение о разделении в новую тему? Если Да - впишите true, Нет - false.:"," ");
+        localStorage.newTopicNameMode = prompt ("Условие формирования названия новой темы при разделении темы : \n true - Выделено из темы + ID (цифровое значение) темы, false - Выделено из темы + <Название темы текстом>"," ");
 		localStorage.textToArchive = prompt ("Введите текст причины переноса темы в Архив"," ");
 		localStorage.textToTemp = prompt ("Введите текст причины переноса темы в Темп"," ");
         localStorage.teatLocalStorage = 1 ;
