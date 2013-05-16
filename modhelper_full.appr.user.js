@@ -2,13 +2,12 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.0.0.1
-// @original author  Kaener
+// @version       2.0.0.3
+// @original author	Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
-// @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/test/modhelper_full.appr.meta.js
-// @downloadURL   https://github.com/GhosT-OdessA/noname-club-modhelper/raw/test/modhelper_full.appr.user.js
-// @grant       none
+// @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
+// @downloadURL   https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
 // @include       http://*.nnm-club.ru/forum/modcp.php*
 // @include       http://nnm-club.ru/forum/modcp.php*
 // @include       https://*.nnm-club.ru/forum/modcp.php*
@@ -20,7 +19,12 @@
 // ==/UserScript==
 // 
 
+//localStorage.setItem('newTopicNameMode', true);
+//localStorage.setItem('text1', 'На трекере доступна новая версия');
+//localStorage.setItem('text2', 'Требуется доработка по замечаниям модератора');
+
 var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
+ console.log('checkApprove = ' + checkApprove);
 
 var isLoaded = false;
 
@@ -41,6 +45,7 @@ function modHelp() {
     'sndbx':    149,
     'soft':     149,
     'tech':     932,
+    'serials':  145,
     'video':    145,
     'Мусорник': 670,
   };
@@ -92,10 +97,18 @@ function modHelp() {
   var leaveMsgOnMv      = true;                     //!- оставлять сообщение о переносе, true -- да, false -- нет
   var addMsgToOld       = false;                     //!- оставлять сообщение о разделении в старой теме, true -- да, false -- нет
   var addMsgToNew       = true;                     //!- оставлять сообщение о разделении в новой теме, true -- да, false -- нет
-  var newTopicNameMode  = false;                    //!- Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>
-  var text1 = 'На трекере доступна новая версия';
-  var text2 = 'Требуется доработка по замечаниям модератора';
-  
+//  var newTopicNameMode  = false;                    //!- Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>
+//  var text1 = 'На трекере доступна новая версия';
+//  var text2 = 'Требуется доработка по замечаниям модератора';
+
+    var newTopicNameMode = localStorage.getItem('newTopicNameMode');
+    console.log('newTopicNameMode = ' + newTopicNameMode);
+    var text1 = localStorage.getItem('text1');
+    console.log('text1 = ' + text1);
+    var text2 = localStorage.getItem('text2');
+    console.log('text2 = ' + text2);
+    
+    
   function SetText1() {
     document.getElementsByClassName('post')[0].value = text1;
   }
