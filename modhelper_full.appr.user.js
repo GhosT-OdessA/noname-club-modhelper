@@ -2,12 +2,12 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.0.0.3
+// @version       2.0.0.2
 // @original author	Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
-// @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/test/modhelper_full.appr.meta.js
-// @downloadURL   https://github.com/GhosT-OdessA/noname-club-modhelper/raw/test/modhelper_full.appr.user.js
+// @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
+// @downloadURL   https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
 // @include       http://*.nnm-club.ru/forum/modcp.php*
 // @include       http://nnm-club.ru/forum/modcp.php*
 // @include       https://*.nnm-club.ru/forum/modcp.php*
@@ -19,24 +19,6 @@
 // ==/UserScript==
 // 
 
-// Проверка наличия ранее сделаных настроек пользователя и при их отсутствии при первом запуске будет предложено заполнение значений переменных
-// пользователем для индивидуальной настройки под себя.
-
-//Для очистки ошибочно введённых данных раскомментировать следующую строчку :
-//	delete localStorage.testLocalStorage;
-
-
-
-	if (localStorage.testLocalStorage == null) {
-        alert( 'Внимание!\n Сейчас будет произведена настройка параметров Помощника модератора. Внимательно прочитайте вопросы и ответьте на них только указанными вариантами ответа, иначе это приведёт к ошибкам работы скрипта');
-		localStorage.leaveMsgOnMv = prompt ("Оставлять сообщение о переносе ( делает активным поле ввода текста примечания )? Если Да - впишите true, Нет - false."," ");
-        localStorage.addMsgToOld = prompt ("Оставлять сообщение о разделении в старой теме? Если Да - впишите true, Нет - false."," ");
-		localStorage.addMsgToNew = prompt ("Добавлять сообщение о разделении в новую тему? Если Да - впишите true, Нет - false.:"," ");
-        localStorage.newTopicNameMode = prompt ("Условие формирования названия новой темы при разделении темы : \n true - Выделено из темы + ID (цифровое значение) темы, false - Выделено из темы + <Название темы текстом>"," ");
-		localStorage.textToArchive = prompt ("Введите текст причины переноса темы в Архив"," ");
-		localStorage.textToTemp = prompt ("Введите текст причины переноса темы в Темп"," ");
-        localStorage.testLocalStorage = 1 ;
-	}
 var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
 
 var isLoaded = false;
@@ -107,28 +89,19 @@ function modHelp() {
   var moveApprovedTo    = temp['Мусорник'];          //!- в этот форум переносим, если мы не узнали исходный форум, но проверяли и тема одобрена
   var splitTo           = temp['Мусорник'];          //!- в этот форум выделяем
   var newTopicName      = 'Выделено из темы ' + tid; //!- название темы при выделении, где tid -- id темы
-//  var leaveMsgOnMv      = true;                     //!- оставлять сообщение о переносе, true -- да, false -- нет
-//  var addMsgToOld       = false;                     //!- оставлять сообщение о разделении в старой теме, true -- да, false -- нет
-//  var addMsgToNew       = true;                     //!- оставлять сообщение о разделении в новой теме, true -- да, false -- нет
-//  var newTopicNameMode  = false;                    //!- Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>
-//  var text1 = 'На трекере доступна новая версия';
-//  var text2 = 'Требуется доработка по замечаниям модератора';
-	
-    var leaveMsgOnMv = localStorage.leaveMsgOnMv ;
-    var addMsgToOld = localStorage.addMsgToOld ;
-    var addMsgToNew = localStorage.addMsgToNew ;
-    var newTopicNameMode = localStorage.newTopicNameMode ;
-    var textToArchive = localStorage.textToArchive ;
-    var textToTemp = localStorage.textToTemp ;
-
-    
-    
-  function setTextToArchive() {
-    document.getElementsByClassName('post')[0].value = textToArchive;
+  var leaveMsgOnMv      = true;                     //!- оставлять сообщение о переносе, true -- да, false -- нет
+  var addMsgToOld       = false;                     //!- оставлять сообщение о разделении в старой теме, true -- да, false -- нет
+  var addMsgToNew       = true;                     //!- оставлять сообщение о разделении в новой теме, true -- да, false -- нет
+  var newTopicNameMode  = false;                    //!- Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>
+  var text1 = 'На трекере доступна новая версия';
+  var text2 = 'Требуется доработка по замечаниям модератора';
+  
+  function SetText1() {
+    document.getElementsByClassName('post')[0].value = text1;
   }
   
-  function setTextToTemp() {
-    document.getElementsByClassName('post')[0].value = textToTemp;
+  function SetText2() {
+    document.getElementsByClassName('post')[0].value = text2;
   }
   
   function findGroup(old) {
@@ -268,10 +241,10 @@ function modHelp() {
   } else if (onMove()) {
     formUpdate('onmove', {'forum': old});
     if (checkApprove && themeIsApproved()) {
-		setTextToArchive();
+		SetText1();
 	    setDest(moveApprovedToF(old));
     } else {
-      setTextToTemp();
+      SetText2();
 	  setDest(moveNotApprovedToF(old));
     }
   }
