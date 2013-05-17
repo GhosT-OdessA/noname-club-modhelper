@@ -27,16 +27,62 @@
 
 
 
-	if (localStorage.testLocalStorage == null) {
-        alert( 'Внимание!\n Сейчас будет произведена настройка параметров Помощника модератора. Внимательно прочитайте вопросы и ответьте на них только указанными вариантами ответа, иначе это приведёт к ошибкам работы скрипта');
-		localStorage.leaveMsgOnMv = prompt ("Оставлять сообщение о переносе ( делает активным поле ввода текста примечания )? Если Да - впишите true, Нет - false."," ");
-        localStorage.addMsgToOld = prompt ("Оставлять сообщение о разделении в старой теме? Если Да - впишите true, Нет - false."," ");
-		localStorage.addMsgToNew = prompt ("Добавлять сообщение о разделении в новую тему? Если Да - впишите true, Нет - false.:"," ");
-        localStorage.newTopicNameMode = prompt ("Условие формирования названия новой темы при разделении темы : \n true - Выделено из темы + ID (цифровое значение) темы, false - Выделено из темы + <Название темы текстом>"," ");
-		localStorage.textToArchive = prompt ("Введите текст причины переноса темы в Архив"," ");
-		localStorage.textToTemp = prompt ("Введите текст причины переноса темы в Темп"," ");
-        localStorage.testLocalStorage = 1 ;
+function OpenDiv() {
+	var div = document.createElement('div');
+	div.innerHTML = "<div style='position:fixed;z-index:100;width:100%;height:100%;top:0px;left:0px;' id='moderator_menu'>"
+                          +"       <div style='position:relative;width:100%;height:100%'>"
+                          +"               <div style='position:absolute;top:0px;left:0px;background-color:gray;filter:alpha(opacity=70);-moz-opacity: 0.7;opacity: 0.7;z-index:200;width:100%;height:100%'></div>"
+                          +"               <div style='position:absolute;top:0px;margin:auto;z-index:300;width: 100%;height:500px;'>"
+                          +"                        <div style='margin:auto;width:400px;background-color: white;border: solid 1px black;padding: 40px;margin-top:100px'>"
+						  +'<form>'
+						  +'<input id="leaveMsgOnMv" type="checkbox">Оставлять сообщение о переносе (делает активным поле ввода текста примечания)</input><br>'
+						  +'<input id="addMsgToOld" type="checkbox">Оставлять сообщение о разделении в старой теме</input><br>'
+						  +'<input id="addMsgToNew" type="checkbox">Добавлять сообщение о разделении в новую тему</input><br>'
+						  +'<input id="newTopicNameMode" type="checkbox">Название темы выводить цифровое значение <br>(Условие формирования названия новой темы при разделении темы <br>true - Выделено из темы + ID (цифровое значение) темы <br>false - Выделено из темы + Название темы текстом)></input><br>'
+						  +'Текст причины переноса темы в Архив:<input id="textToArchive" type="text"><br>'
+						  +'Текст причины переноса темы в Темп:<input id="textToTemp" type="text"><br>'
+    +'<input type="button" value="Записать" onclick="SaveSettingAndDeleteDiv(true)"> <input type="button" style="aligh:right;" value="Закрыть" onclick="SaveSettingAndDeleteDiv(false)">'
+						  +'</form>'
+                          +"                        </div>"
+                          +"               </div>"
+                          +"       </div>"
+                          +"</div>";
+	document.body.appendChild(div);
+	
+	if (localStorage.testLocalStorage == null) 
+	{
+	 localStorage.leaveMsgOnMv = true;
+	 localStorage.addMsgToOld = false;
+	 localStorage.addMsgToNew = true;
+	 localStorage.newTopicNameMode = false;
+	 localStorage.textToArchive = "На трекере доступна новая версия";
+     localStorage.textToTemp = "Нуждается в дооформлении";
+     localStorage.testLocalStorage = 1 ;
 	}
+	 document.getElementById('leaveMsgOnMv').checked = (localStorage.leaveMsgOnMv == "true");
+	 document.getElementById('addMsgToOld').checked = (localStorage.addMsgToOld == "true");
+	 document.getElementById('addMsgToNew').checked = (localStorage.addMsgToNew == "true");
+	 document.getElementById('newTopicNameMode').checked = (localStorage.newTopicNameMode == "true");
+	 document.getElementById('textToArchive').value = localStorage.textToArchive;
+     document.getElementById('textToTemp').value = localStorage.textToTemp;
+	
+	 return null;
+}
+
+function SaveSettingAndDeleteDiv(save) {
+    if (save) {
+        localStorage.leaveMsgOnMv = document.getElementById('leaveMsgOnMv').checked;
+	 localStorage.addMsgToOld = document.getElementById('addMsgToOld').checked;
+	 localStorage.addMsgToNew = document.getElementById('addMsgToNew').checked;
+	 localStorage.newTopicNameMode = document.getElementById('newTopicNameMode').checked;
+	 localStorage.textToArchive = document.getElementById('textToArchive').value;     
+	 localStorage.textToTemp = document.getElementById('textToTemp').value;
+	 localStorage.testLocalStorage = 1; 
+     }
+	 var div = document.getElementById('moderator_menu').parentNode;
+	 div.parentNode.removeChild(div);
+}
+
 var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
 
 var isLoaded = false;
@@ -299,6 +345,20 @@ function checkJquery() {
     script.textContent = "var checkApprove = " + checkApprove + ";\nvar $ = window.jQuery;\n" + "(" + modHelp.toString() + ")();";
     document.body.appendChild(script);
   }
+  var div = document.createElement('div');
+	div.innerHTML = "<div style='position:absolute;z-index:100;top:0px;left:0px;background:#fc0' id='moderator_setting'><input type='button' value='НАСТРОЙКИ' onclick='OpenDiv()'></div>";
+	document.body.appendChild(div);
+	
+	var scriptOpenDiv = document.createElement("script");
+	scriptOpenDiv.textContent = OpenDiv.toString();
+    document.body.appendChild(scriptOpenDiv);
+	
+	var scriptSaveSettingAndDeleteDiv = document.createElement("script");
+	scriptSaveSettingAndDeleteDiv.textContent = SaveSettingAndDeleteDiv.toString();
+	document.body.appendChild(scriptSaveSettingAndDeleteDiv);
+	
+
+	if (localStorage.testLocalStorage == null) {OpenDiv();}
 }
 
 function loadingHelper() {
