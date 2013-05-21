@@ -3,7 +3,7 @@
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
 // @version       2.0.0.5
-// @original author	Kaener
+// @original author    Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
 // @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
@@ -48,7 +48,6 @@ function OpenDiv() {
     document.body.appendChild(div);
 
     if (localStorage.testLocalStorage === null)
-        ;
     {
         localStorage.leaveMsgOnMv = true;
         localStorage.addMsgToOld = false;
