@@ -8,14 +8,14 @@
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
 // @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
 // @downloadURL   https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
-// @include       http://*.nnm-club.ru/forum/modcp.php*
-// @include       http://nnm-club.ru/forum/modcp.php*
-// @include       https://*.nnm-club.ru/forum/modcp.php*
-// @include       https://nnm-club.ru/forum/modcp.php*
-// @match         http://*.nnm-club.ru/forum/modcp.php*
-// @match         http://nnm-club.ru/forum/modcp.php*
-// @match         https://*.nnm-club.ru/forum/modcp.php*
-// @match         https://nnm-club.ru/forum/modcp.php*
+// @include       http://*.nnm-club.me/forum/modcp.php*
+// @include       http://nnm-club.me/forum/modcp.php*
+// @include       https://*.nnm-club.me/forum/modcp.php*
+// @include       https://nnm-club.me/forum/modcp.php*
+// @match         http://*.nnm-club.me/forum/modcp.php*
+// @match         http://nnm-club.me/forum/modcp.php*
+// @match         https://*.nnm-club.me/forum/modcp.php*
+// @match         https://nnm-club.me/forum/modcp.php*
 // ==/UserScript==
 // 
 
