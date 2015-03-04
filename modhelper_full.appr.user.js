@@ -2,12 +2,12 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.0.0.8a
+// @version       2.0.0.9a
 // @original author    Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
-// @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/test/modhelper_full.appr.meta.js
-// @downloadURL   https://github.com/GhosT-OdessA/noname-club-modhelper/raw/test/modhelper_full.appr.user.js
+// @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
+// @downloadURL   https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
 // @include       http://*.nnm-club.me/forum/modcp.php*
 // @include       http://nnm-club.me/forum/modcp.php*
 // @include       https://*.nnm-club.me/forum/modcp.php*
@@ -47,14 +47,13 @@ function OpenDiv() {
     document.body.appendChild(div);
 	
     
-    if ( localStorage.testLocalStorage == undefined ){
-        localStorage.leaveMsgOnMv = true;
-        localStorage.addMsgToOld = false;
-        localStorage.addMsgToNew = true;
-        localStorage.newTopicNameMode = false;
-        localStorage.textToArchive = "На трекере доступна новая версия";
-        localStorage.textToTemp = "Нуждается в дооформлении";
-        localStorage.testLocalStorage = 1;
+    if (typeof localStorage.testLocalStorage === 'undefined'){
+      document.getElementById('leaveMsgOnMv').checked = true;
+      document.getElementById('addMsgToOld').checked = false;
+      document.getElementById('addMsgToNew').checked = true;
+      document.getElementById('newTopicNameMode').checked = false;
+      document.getElementById('textToArchive').value = "Раздающего не было месяц или более";
+      document.getElementById('textToTemp').value = "Нуждается в доработке оформления";
     } 
 
     document.getElementById('leaveMsgOnMv').checked = (localStorage.leaveMsgOnMv === "true");
@@ -82,13 +81,32 @@ function SaveSettingAndDeleteDiv(save) {
 }
 
 var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
+var approved = undefined;
 
 var isLoaded = false;
+var tid = document.getElementsByName('t')[0].value;
+function themeIsApproved() {
+    $.ajax({
+        url: '/forum/viewtopic.php?t=' + tid,
+        success: function(result) {
+            if (result.isOk === false)
+                console.debug(result.message);
+            else {
+                approved = $('tr.row1 > td.genmed', result);
+                if (typeof(approved) !== 'undefined' && approved.length > 11) {
+                    approved = approved[11].innerHTML.indexOf("Оформление проверено ") > -1;
+                } else {
+                    approved = false;
+                }
+            }
+        },
+        async: false
+    });
+}
 
 function modHelp() {
 
     var done = false;
-    var tid = document.getElementsByName('t')[0].value;
 
     var temp = {
         'anime': 146,
@@ -142,8 +160,8 @@ function modHelp() {
         'mediadisgraf': [166, 267, 534, 676, 808, 988, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077, 1078, 1102, 1103, 1105, 1106, 1107, 1108, 1110, 1111, 1112, 1113, 1114, 1115, 1116, 1129, 1134, 1136, 1138, 1139, 1204],
         'mobile': [208, 209, 210, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 837, 838, 839, 840, 841, 842, 843, 844],
         'music': [54, 55, 56, 118, 313, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 336, 337, 338, 339, 340, 341, 344, 345, 346, 347, 348, 349, 352, 353, 354, 357, 358, 359, 360, 361, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 398, 429, 671, 672, 673, 674, 680, 681, 711, 824, 876, 877, 878, 879, 917, 961, 962, 963, 965, 976, 977, 978, 979, 980, 981, 982, 983, 984, 1149, 1157, 1158, 1159, 1160, 1161, 1162, 1163, 1164, 1165, 1166, 1167, 1168, 1178, 1179, 1180, 1181, 1182, 1183, 1184, 1185, 1186, 1187, 1188, 1189, 1190],
-        'music_video': [271, 257, 258, 883, 955, 1210],
-        'serials': [768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 803, 804, 922, 1140, 1141, 1142, 1144, 1195, 1196],
+        'music_video': [257, 258, 271, 883, 955, 1210],
+        'serials': [768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 803, 804, 922, 1140, 1141, 1142, 1144, 1195, 1196, 1219, 1220, 1221],
         'sndbx': [1042],
         'soft': [24, 503, 504, 506, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 529, 530, 532, 533, 535, 536, 545, 548, 549, 550, 552, 553, 554, 561, 562, 563, 564, 717, 763, 764, 765, 820, 916, 1023, 1025, 1026, 1031, 1032, 1137],
         'tech': [47, 948],
@@ -269,27 +287,6 @@ function modHelp() {
         }
     }
 
-    function themeIsApproved() {
-        var approved = false;
-        $.ajax({
-            url: '/forum/viewtopic.php?t=' + tid,
-            success: function(result) {
-                if (result.isOk === false)
-                    console.debug(result.message);
-                else {
-                    approved = $('tr.row1 > td.genmed', result);
-                    if (typeof(approved) !== 'undefined' && approved.length > 11) {
-                        approved = approved[11].innerHTML.indexOf("Оформление проверено ") > -1;
-                    } else {
-                        approved = false;
-                    }
-                }
-            },
-            async: false
-        });
-        return approved;
-    }
-
     function isArchive(forum) {
         for (var i in archive) {
             if (archive.hasOwnProperty(i)) { // skip inherited properties
@@ -354,15 +351,15 @@ function modHelp() {
         setDest(splitTo);
     } else if (onMove()) {
         formUpdate('onmove', {'forum': old});
-        if  (checkApprove && themeIsApproved() && isArchive(old)) {
+        if  (checkApprove && approved && isArchive(old)) {
             setEmptyText();
             setDest(old);
         }
-        else if  (checkApprove && themeIsApproved() && isTemp(old)) {
+        else if  (checkApprove && approved && isTemp(old)) {
             setEmptyText();
             setDest(old);
         }
-        else if  (checkApprove && themeIsApproved() && !isArchive(old) && !isTemp(old)) {
+        else if  (checkApprove && approved && !isArchive(old) && !isTemp(old)) {
             setTextToArchive();
             setDest(moveApprovedToF(old));
         }
@@ -381,9 +378,11 @@ function checkJquery() {
         modHelp();
     } else if (typeof(window.jQuery) !== 'undefined') {// Opera!
         $ = window.jQuery;
+        themeIsApproved();
         modHelp();
     } else if (typeof(unsafeWindow.jQuery) !== 'undefined') {  // Firefox!
         $ = unsafeWindow.jQuery;
+        themeIsApproved();
         modHelp();
     } else { // Chrome and others
         var script = document.createElement("script");
@@ -403,7 +402,7 @@ function checkJquery() {
     document.body.appendChild(scriptSaveSettingAndDeleteDiv);
 
 
-    if (localStorage.testLocalStorage == undefined ) {
+    if (typeof localStorage.testLocalStorage === 'undefined' ) {
         OpenDiv();
     }
 }
