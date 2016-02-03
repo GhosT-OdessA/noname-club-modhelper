@@ -16,6 +16,14 @@
 // @match         http://nnm-club.me/forum/modcp.php*
 // @match         https://*.nnm-club.me/forum/modcp.php*
 // @match         https://nnm-club.me/forum/modcp.php*
+// @include       http://*.nnm-club.to/forum/modcp.php*
+// @include       http://nnm-club.to/forum/modcp.php*
+// @include       https://*.nnm-club.to/forum/modcp.php*
+// @include       https://nnm-club.to/forum/modcp.php*
+// @match         http://*.nnm-club.to/forum/modcp.php*
+// @match         http://nnm-club.to/forum/modcp.php*
+// @match         https://*.nnm-club.to/forum/modcp.php*
+// @match         https://nnm-club.to/forum/modcp.php*
 // ==/UserScript==
 //
 
