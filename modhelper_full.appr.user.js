@@ -2,7 +2,7 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.0.0.11
+// @version       2.0.0.12
 // @original author    Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
@@ -16,14 +16,14 @@
 // @match         http://nnm-club.me/forum/modcp.php*
 // @match         https://*.nnm-club.me/forum/modcp.php*
 // @match         https://nnm-club.me/forum/modcp.php*
-// @include       http://*.nnm-club.to/forum/modcp.php*
-// @include       http://nnm-club.to/forum/modcp.php*
-// @include       https://*.nnm-club.to/forum/modcp.php*
-// @include       https://nnm-club.to/forum/modcp.php*
-// @match         http://*.nnm-club.to/forum/modcp.php*
-// @match         http://nnm-club.to/forum/modcp.php*
-// @match         https://*.nnm-club.to/forum/modcp.php*
-// @match         https://nnm-club.to/forum/modcp.php*
+// @include       http://*.nnmclub.to/forum/modcp.php*
+// @include       http://nnmclub.to/forum/modcp.php*
+// @include       https://*.nnmclub.to/forum/modcp.php*
+// @include       https://nnmclub.to/forum/modcp.php*
+// @match         http://*.nnmclub.to/forum/modcp.php*
+// @match         http://nnmclub.to/forum/modcp.php*
+// @match         https://*.nnmclub.to/forum/modcp.php*
+// @match         https://nnmclub.to/forum/modcp.php*
 // ==/UserScript==
 //
 
