@@ -2,20 +2,12 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.0.0.12
+// @version       2.0.0.13
 // @original author    Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
 // @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
 // @downloadURL   https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
-// @include       http://*.nnm-club.me/forum/modcp.php*
-// @include       http://nnm-club.me/forum/modcp.php*
-// @include       https://*.nnm-club.me/forum/modcp.php*
-// @include       https://nnm-club.me/forum/modcp.php*
-// @match         http://*.nnm-club.me/forum/modcp.php*
-// @match         http://nnm-club.me/forum/modcp.php*
-// @match         https://*.nnm-club.me/forum/modcp.php*
-// @match         https://nnm-club.me/forum/modcp.php*
 // @include       http://*.nnmclub.to/forum/modcp.php*
 // @include       http://nnmclub.to/forum/modcp.php*
 // @include       https://*.nnmclub.to/forum/modcp.php*
@@ -362,19 +354,17 @@ function modHelp() {
         setDest(splitTo);
     } else if (onMove()) {
         formUpdate('onmove', {'forum': old});
-        if  (checkApprove && themeIsApproved() && isArchive(old)) {
+        var isApproved = themeIsApproved();
+        if (checkApprove && isApproved && isArchive(old)) {
             setEmptyText();
             setDest(old);
-        }
-        else if  (checkApprove && themeIsApproved() && isTemp(old)) {
+        } else if (checkApprove && isApproved && isTemp(old)) {
             setEmptyText();
             setDest(old);
-        }
-        else if  (checkApprove && themeIsApproved() && !isArchive(old) && !isTemp(old)) {
+        } else if (checkApprove && isApproved && !isArchive(old) && !isTemp(old)) {
             setTextToArchive();
             setDest(moveApprovedToF(old));
-        }
-        else {
+        } else {
             setTextToTemp();
             setDest(moveNotApprovedToF(old));
         }
