@@ -2,20 +2,20 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.0.0.9a
+// @version       2.0.0.13
 // @original author    Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
 // @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
 // @downloadURL   https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
-// @include       http://*.nnm-club.me/forum/modcp.php*
-// @include       http://nnm-club.me/forum/modcp.php*
-// @include       https://*.nnm-club.me/forum/modcp.php*
-// @include       https://nnm-club.me/forum/modcp.php*
-// @match         http://*.nnm-club.me/forum/modcp.php*
-// @match         http://nnm-club.me/forum/modcp.php*
-// @match         https://*.nnm-club.me/forum/modcp.php*
-// @match         https://nnm-club.me/forum/modcp.php*
+// @include       http://*.nnmclub.to/forum/modcp.php*
+// @include       http://nnmclub.to/forum/modcp.php*
+// @include       https://*.nnmclub.to/forum/modcp.php*
+// @include       https://nnmclub.to/forum/modcp.php*
+// @match         http://*.nnmclub.to/forum/modcp.php*
+// @match         http://nnmclub.to/forum/modcp.php*
+// @match         https://*.nnmclub.to/forum/modcp.php*
+// @match         https://nnmclub.to/forum/modcp.php*
 // ==/UserScript==
 //
 
@@ -47,13 +47,14 @@ function OpenDiv() {
     document.body.appendChild(div);
 	
     
-    if (typeof localStorage.testLocalStorage === 'undefined'){
-      document.getElementById('leaveMsgOnMv').checked = true;
-      document.getElementById('addMsgToOld').checked = false;
-      document.getElementById('addMsgToNew').checked = true;
-      document.getElementById('newTopicNameMode').checked = false;
-      document.getElementById('textToArchive').value = "Раздающего не было месяц или более";
-      document.getElementById('textToTemp').value = "Нуждается в доработке оформления";
+    if ( localStorage.testLocalStorage == undefined ){
+        localStorage.leaveMsgOnMv = true;
+        localStorage.addMsgToOld = false;
+        localStorage.addMsgToNew = true;
+        localStorage.newTopicNameMode = false;
+        localStorage.textToArchive = "На трекере доступна новая версия";
+        localStorage.textToTemp = "Нуждается в дооформлении";
+        localStorage.testLocalStorage = 1;
     } 
 
     document.getElementById('leaveMsgOnMv').checked = (localStorage.leaveMsgOnMv === "true");
@@ -81,32 +82,13 @@ function SaveSettingAndDeleteDiv(save) {
 }
 
 var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
-var approved = undefined;
 
 var isLoaded = false;
-var tid = document.getElementsByName('t')[0].value;
-function themeIsApproved() {
-    $.ajax({
-        url: '/forum/viewtopic.php?t=' + tid,
-        success: function(result) {
-            if (result.isOk === false)
-                console.debug(result.message);
-            else {
-                approved = $('tr.row1 > td.genmed', result);
-                if (typeof(approved) !== 'undefined' && approved.length > 11) {
-                    approved = approved[11].innerHTML.indexOf("Оформление проверено ") > -1;
-                } else {
-                    approved = false;
-                }
-            }
-        },
-        async: false
-    });
-}
 
 function modHelp() {
 
     var done = false;
+    var tid = document.getElementsByName('t')[0].value;
 
     var temp = {
         'anime': 146,
@@ -149,21 +131,21 @@ function modHelp() {
     };
 
     var map = {
-        'anime': [23, 101, 102, 107, 615, 616, 617, 619, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 642, 643, 644, 645, 646, 648, 695, 696],
+        'anime': [23, 101, 102, 107, 615, 616, 617, 619, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 642, 643, 644, 645, 646, 648, 695, 696, 1222],
         'avto': [299, 301, 300],
-        'books': [299, 300, 301, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 447, 449, 451, 452, 453, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 557, 558, 657, 662, 663, 755, 767, 815, 816, 817, 818, 875, 886, 887, 893, 895, 896, 931, 933, 957, 958, 1063],
+        'books': [299, 300, 301, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 447, 449, 451, 452, 453, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 557, 558, 657, 662, 663, 755, 767, 815, 816, 817, 818, 875, 886, 887, 893, 895, 896, 931, 933, 957, 958, 1063, 1152, 1153, 1170, 1171, 1172, 1173, 1174, 1175, 1176, 1198, 1199, 1223, 1226, 1227],
         'cartoon': [229, 230, 231, 232, 658, 659, 660, 661, 730, 732, 890],
         'classic': [318, 320, 677, 319, 678, 885, 908, 909, 910, 911, 912],
         'docum': [576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 593, 594, 595, 596, 597, 598, 599, 600, 603, 604, 605, 606, 607, 608, 609, 614, 652, 706, 713, 714, 750, 761, 806, 809, 812, 819, 823, 894, 924, 950, 951, 953, 956, 959, 974, 975, 1194, 1200],
-        'games': [36, 37, 38, 129, 268, 316, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 410, 411, 412, 413, 414, 415, 416, 417, 418, 428, 728, 740, 741, 746, 822, 848, 968, 969, 970, 971, 972, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1034, 1035, 1036, 1037, 1038, 1039, 1041],
+        'games': [36, 37, 38, 129, 268, 316, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 410, 411, 412, 413, 414, 415, 416, 417, 418, 428, 728, 740, 741, 746, 822, 848, 968, 969, 970, 971, 972, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1034, 1035, 1036, 1037, 1038, 1039, 1041, 1044, 1045, 1046, 1047, 1048, 1049, 1050, 1051, 1052,1053, 1054, 1056, 1057, 1058, 1059, 1060, 1061, 1192, 1193],
         'humor': [610, 611, 612, 613, 653, 654, 655, 656],
         'mediadisgraf': [166, 267, 534, 676, 808, 988, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077, 1078, 1102, 1103, 1105, 1106, 1107, 1108, 1110, 1111, 1112, 1113, 1114, 1115, 1116, 1129, 1134, 1136, 1138, 1139, 1204],
-        'mobile': [208, 209, 210, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 837, 838, 839, 840, 841, 842, 843, 844],
-        'music': [54, 55, 56, 118, 313, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 336, 337, 338, 339, 340, 341, 344, 345, 346, 347, 348, 349, 352, 353, 354, 357, 358, 359, 360, 361, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 398, 429, 671, 672, 673, 674, 680, 681, 711, 824, 876, 877, 878, 879, 917, 961, 962, 963, 965, 976, 977, 978, 979, 980, 981, 982, 983, 984, 1149, 1157, 1158, 1159, 1160, 1161, 1162, 1163, 1164, 1165, 1166, 1167, 1168, 1178, 1179, 1180, 1181, 1182, 1183, 1184, 1185, 1186, 1187, 1188, 1189, 1190],
+        'mobile': [208, 209, 210, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 837, 838, 839, 840, 841, 842, 843, 844, 1231, 1232, 1233, 1235, 1236, 1238, 1240],
+        'music': [54, 55, 56, 118, 313, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333 , 334, 336, 337, 338, 339, 340, 341, 344, 345, 346, 347, 348, 349, 352, 353, 354, 357, 358, 359, 360, 361, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 398, 429, 671, 672, 673, 674, 680, 681, 711, 824, 876, 877, 878, 879, 917, 961, 962, 963, 965, 976, 977, 978, 979, 980, 981, 982, 983, 984, 1149, 1157, 1158, 1159, 1160, 1161, 1162, 1163, 1164, 1165, 1166, 1167, 1168, 1178, 1179, 1180, 1181, 1182, 1183, 1184, 1185, 1186, 1187, 1188, 1189, 1190, 1213, 1215, 1216, 1217, 1218, 1224, 1225, 1234, 1243, 1255, 1256, 1257, 1258, 1259, 1260, 1261],
         'music_video': [257, 258, 271, 883, 955, 1210],
-        'serials': [768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 803, 804, 922, 1140, 1141, 1142, 1144, 1195, 1196, 1219, 1220, 1221],
+        'serials': [768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 803, 804, 922, 1140, 1141, 1142, 1144, 1195, 1196, 1219, 1220, 1221, 1242],
         'sndbx': [1042],
-        'soft': [24, 503, 504, 506, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 529, 530, 532, 533, 535, 536, 545, 548, 549, 550, 552, 553, 554, 561, 562, 563, 564, 717, 763, 764, 765, 820, 916, 1023, 1025, 1026, 1031, 1032, 1137],
+        'soft': [24, 503, 504, 506, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 529, 530, 532, 533, 535, 536, 545, 548, 549, 550, 552, 553, 554, 561, 562, 563, 564, 717, 763, 764, 765, 820, 916, 1023, 1025, 1026, 1031, 1032, 1137, 1241, 1254],
         'tech': [47, 948],
         'ts': [217],
         'video': [216, 218, 219, 220, 221, 222, 224, 225, 226, 227, 228, 254, 255, 256, 264, 265, 266, 270, 272, 321, 682, 693, 694, 882, 884, 888, 889, 891, 905, 906, 913, 954, 1150, 1211]
@@ -287,6 +269,27 @@ function modHelp() {
         }
     }
 
+    function themeIsApproved() {
+        var approved = false;
+        $.ajax({
+            url: '/forum/viewtopic.php?t=' + tid,
+            success: function(result) {
+                if (result.isOk === false)
+                    console.debug(result.message);
+                else {
+                    approved = $('tr.row1 > td.genmed', result);
+                    if (typeof(approved) !== 'undefined' && approved.length > 11) {
+                        approved = approved[11].innerHTML.indexOf("Оформление проверено ") > -1;
+                    } else {
+                        approved = false;
+                    }
+                }
+            },
+            async: false
+        });
+        return approved;
+    }
+
     function isArchive(forum) {
         for (var i in archive) {
             if (archive.hasOwnProperty(i)) { // skip inherited properties
@@ -351,19 +354,17 @@ function modHelp() {
         setDest(splitTo);
     } else if (onMove()) {
         formUpdate('onmove', {'forum': old});
-        if  (checkApprove && approved && isArchive(old)) {
+        var isApproved = themeIsApproved();
+        if (checkApprove && isApproved && isArchive(old)) {
             setEmptyText();
             setDest(old);
-        }
-        else if  (checkApprove && approved && isTemp(old)) {
+        } else if (checkApprove && isApproved && isTemp(old)) {
             setEmptyText();
             setDest(old);
-        }
-        else if  (checkApprove && approved && !isArchive(old) && !isTemp(old)) {
+        } else if (checkApprove && isApproved && !isArchive(old) && !isTemp(old)) {
             setTextToArchive();
             setDest(moveApprovedToF(old));
-        }
-        else {
+        } else {
             setTextToTemp();
             setDest(moveNotApprovedToF(old));
         }
@@ -378,11 +379,9 @@ function checkJquery() {
         modHelp();
     } else if (typeof(window.jQuery) !== 'undefined') {// Opera!
         $ = window.jQuery;
-        themeIsApproved();
         modHelp();
     } else if (typeof(unsafeWindow.jQuery) !== 'undefined') {  // Firefox!
         $ = unsafeWindow.jQuery;
-        themeIsApproved();
         modHelp();
     } else { // Chrome and others
         var script = document.createElement("script");
@@ -402,7 +401,7 @@ function checkJquery() {
     document.body.appendChild(scriptSaveSettingAndDeleteDiv);
 
 
-    if (typeof localStorage.testLocalStorage === 'undefined' ) {
+    if (localStorage.testLocalStorage == undefined ) {
         OpenDiv();
     }
 }
