@@ -75,6 +75,7 @@ function SaveSettingAndDeleteDiv(i) {
         localStorage.textToArchive = document.getElementById('textToArchive').value;
         localStorage.textToTemp = document.getElementById('textToTemp').value;
         localStorage.testLocalStorage = 1;
+        location.reload();
     }
     else if (i == 2) {
         localStorage.removeItem("leaveMsgOnMv");
