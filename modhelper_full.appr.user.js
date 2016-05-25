@@ -23,6 +23,7 @@
 // пользователем для индивидуальной настройки под себя.
 
 
+
 function OpenDiv() {
     var div = document.createElement('div');
     div.innerHTML = "<div style='position:fixed;z-index:100;width:100%;height:100%;top:0px;left:0px;' id='moderator_menu'>" +
@@ -33,11 +34,11 @@ function OpenDiv() {
               '<form>' +
               '<input id="leaveMsgOnMv" type="checkbox">Оставлять сообщение о переносе (делает активным поле ввода текста примечания)</input><br>' +
               '<input id="addMsgToOld" type="checkbox">Оставлять сообщение о разделении в старой теме</input><br>' +
-              '<input id="addMsgToNew" type="checkbox">Добавлять сообщение о разделении в новую тему</input><br>' +
-              '<input id="newTopicNameMode" type="checkbox">Название темы выводить цифровое значение <br>(Условие формирования названия новой темы при разделении темы <br>true - Выделено из темы + ID (цифровое значение) темы <br>false - Выделено из темы + Название темы текстом)</input><br>' +
+              '<input id="addMsgToNew" type="checkbox">Добавлять сообщение о разделении в новую тему</input><br><br>' +
+              '<input id="newTopicNameMode" type="checkbox">Выводить в название темы цифровое значение <br>Условие формирования названия новой темы при разделении темы: <br>true - Выделено из темы + ID (цифровое значение) темы <br>false - Выделено из темы + Название темы текстом</input><br>' +
               '<br><br><table width=100%><tr><td width="40%" align="left"><font size="3px">Текст причины переноса темы в Архив:</font></td><td><input style="width: 80%; margin-top: 15px;" id="textToArchive" type="text"><br><br></td></tr>' +
               '<tr><td width="40%" align="left"><font size="3px">Текст причины переноса темы в Темп:</font></td><td><input style=width:80% id="textToTemp" type="text"></td></tr></table><br><br>' +
-              '<table width=100%><tr><td align="left"><input type="button" value="Сохранить изменения" onclick="SaveSettingAndDeleteDiv(true)" style="background-color: #7FFF00;"></td><td align="right"><input type="button" value="Закрыть без изменения" onclick="SaveSettingAndDeleteDiv(false)" style="background-color: #FF6347;"></td></tr></table>' +
+              '<table width=100%><tr><td align="left"><input type="button" value="Сохранить изменения" onclick="SaveSettingAndDeleteDiv(1)" style="background-color: #7FFF00;"></td><td align="center"><input type="button" value="Сброс настроек" onclick="SaveSettingAndDeleteDiv(2)"></td><td align="right"><input type="button" value="Закрыть без изменения" onclick="SaveSettingAndDeleteDiv(false)" style="background-color: #FF6347;"></td></tr></table>' +
               '</form>' +
               "                        </div>"+
               "               </div>" +
@@ -65,8 +66,8 @@ function OpenDiv() {
     return null;
 }
 
-function SaveSettingAndDeleteDiv(save) {
-    if (save) {
+function SaveSettingAndDeleteDiv(i) {
+    if (i == 1) {
         localStorage.leaveMsgOnMv = document.getElementById('leaveMsgOnMv').checked;
         localStorage.addMsgToOld = document.getElementById('addMsgToOld').checked;
         localStorage.addMsgToNew = document.getElementById('addMsgToNew').checked;
@@ -74,6 +75,16 @@ function SaveSettingAndDeleteDiv(save) {
         localStorage.textToArchive = document.getElementById('textToArchive').value;
         localStorage.textToTemp = document.getElementById('textToTemp').value;
         localStorage.testLocalStorage = 1;
+    }
+    else if (i == 2) {
+        localStorage.removeItem("leaveMsgOnMv");
+        localStorage.removeItem("addMsgToOld");
+        localStorage.removeItem("addMsgToNew");
+        localStorage.removeItem("newTopicNameMode");
+        localStorage.removeItem("textToArchive");
+        localStorage.removeItem("textToTemp");
+        localStorage.removeItem("testLocalStorage");
+        location.reload();
     }
     var div = document.getElementById('moderator_menu').parentNode;
     div.parentNode.removeChild(div);
