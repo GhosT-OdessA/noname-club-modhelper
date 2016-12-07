@@ -2,7 +2,7 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.1.0.0
+// @version       2.1.0.1
 // @original author    Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/ElSwanko/noname-club-modhelper
@@ -16,6 +16,18 @@
 // @match         http://nnmclub.to/forum/modcp.php*
 // @match         https://*.nnmclub.to/forum/modcp.php*
 // @match         https://nnmclub.to/forum/modcp.php*
+// @include       http://*.nnm-club.me/forum/modcp.php*
+// @include       http://nnm-club.me/forum/modcp.php*
+// @include       https://*.nnm-club.me/forum/modcp.php*
+// @include       https://nnm-club.me/forum/modcp.php*
+// @match         http://*.nnm-club.me/forum/modcp.php*
+// @match         http://nnm-club.me/forum/modcp.php*
+// @match         https://*.nnm-club.me/forum/modcp.php*
+// @match         https://nnm-club.me/forum/modcp.php*
+// @include       http://dsenxis5txr4zbxe.onion/forum/modcp.php*
+// @include       https://dsenxis5txr4zbxe.onion/forum/modcp.php*
+// @match         http://dsenxis5txr4zbxe.onion/forum/modcp.php*
+// @match         https://dsenxis5txr4zbxe.onion/forum/modcp.php*
 // @grant         none
 // ==/UserScript==
 //
@@ -30,6 +42,24 @@ var checkApproved = true;
 var selectSize = 1;
 
 function OpenDiv() {
+    /** Выставляем настройки по-умолчанию */
+    if (localStorage.testLocalStorage === undefined){
+        /** Оставлять сообщение о переносе:                 true -- да, false -- нет */
+        localStorage.leaveMsgOnMv = true;
+        /** Оставлять сообщение о разделении в старой теме: true -- да, false -- нет */
+        localStorage.addMsgToOld = false;
+        /** Оставлять сообщение о разделении в новой теме:  true -- да, false -- нет */
+        localStorage.addMsgToNew = true;
+        /** Режим формирования названия новой темы при разделении:
+         * true -- Выделено из темы + <ID темы>, false -- Выделено из темы + <Название темы> */
+        localStorage.newTopicNameMode = false;
+        /** Текст сообщения об отправке в архив */
+        localStorage.textToArchive = "На трекере доступна новая версия";
+        /** Текст сообщения об отправке в темп */
+        localStorage.textToTemp = "Нуждается в дооформлении";
+        localStorage.testLocalStorage = 1;
+    }
+
     var div = document.createElement('div');
     div.innerHTML = "<div style='position:fixed;z-index:100;width:100%;height:100%;top:0px;left:0px;' id='moderator_menu'>" +
               "       <div style='position:relative;width:100%;height:100%'>" +
@@ -50,16 +80,6 @@ function OpenDiv() {
               "       </div>" +
               "</div>";
     document.body.appendChild(div);
-
-    if (localStorage.testLocalStorage === undefined){
-        localStorage.leaveMsgOnMv = true;
-        localStorage.addMsgToOld = false;
-        localStorage.addMsgToNew = true;
-        localStorage.newTopicNameMode = false;
-        localStorage.textToArchive = "На трекере доступна новая версия";
-        localStorage.textToTemp = "Нуждается в дооформлении";
-        localStorage.testLocalStorage = 1;
-    }
 
     document.getElementById('leaveMsgOnMv').checked = (localStorage.leaveMsgOnMv === "true");
     document.getElementById('addMsgToOld').checked = (localStorage.addMsgToOld === "true");
@@ -227,36 +247,11 @@ function modHelp() {
     var moveApprovedTo = temp.trash;
     /** В этот форум выделяем */
     var splitTo = temp.trash;
-    /** Название темы при выделении, где tid -- id темы */
-    var newTopicName = 'Выделено из темы ' + tid;
-    /** Оставлять сообщение о переносе, true -- да, false -- нет */
-//  var leaveMsgOnMv      = true;
-    /** Оставлять сообщение о разделении в старой теме, true -- да, false -- нет*/
-//  var addMsgToOld       = false;
-    /** Оставлять сообщение о разделении в новой теме, true -- да, false -- нет */
-//  var addMsgToNew       = true;
-    /** Режим формирования названия новой темы при разделении, true -- Выделено из темы + <ID темы>, false -- Выделено из темы + <Название темы> */
-//  var newTopicNameMode  = false;
-//  var text1 = 'На трекере доступна новая версия';
-//  var text2 = 'Требуется доработка по замечаниям модератора';
+    /** Название темы при выделении */
+    var newTopicName = 'Выделено из темы ';
 
-    var leaveMsgOnMv = localStorage.leaveMsgOnMv;
-    //console.log('leaveMsgOnMv = ' + leaveMsgOnMv);
-    var addMsgToOld = (localStorage.addMsgToOld === 'true');
-    //console.log('addMsgToOld = ' + addMsgToOld);
-    var addMsgToNew = (localStorage.addMsgToNew === 'true');
-    //console.log('leaveMsgOnMv = ' + leaveMsgOnMv);
-    var newTopicNameMode = (localStorage.newTopicNameMode === 'true');
-    //console.log('newTopicNameMode = ' + newTopicNameMode);
-    var textToArchive = localStorage.textToArchive;
-    //console.log('textToArchive = ' + textToArchive);
-    var textToTemp = localStorage.textToTemp;
-    //console.log('textToTemp = ' + textToTemp);
     var savedText;
     var msgMoveElem = document.getElementById('insert_msg');
-    var msgElem = document.getElementById('move_bot');
-    var msgSplitElemOld = document.getElementById('after_split_to_old');
-    var msgSplitElemNew = document.getElementById('after_split_to_new');
 
     /**
      * Описание категории
@@ -297,7 +292,7 @@ function modHelp() {
             var optgroup = select.children[i];
             var category = categories[category_index[i]];
             category.label = optgroup.label;
-            var forums = map[category.id];
+            var forums = map[category_index[i]];
             for (var j = 0; j < optgroup.children.length; j++) {
                 var option = optgroup.children[j];
                 var forum = forumObj(parseInt(option.value), option.text, option.selected, option.disabled);
@@ -315,7 +310,7 @@ function modHelp() {
      * соответствующей категории. Также добавляются архив и темп (как наиболее востребованные цели).
      * Сразу же перестраиваем основной список с выбором всех категорий.
      */
-    function buildCategorySelect() {
+    function buildCategorySelect(onMove) {
         var categorySelect = document.createElement('select');
         categorySelect.style.width = '300px';
         categorySelect.id = 'categories';
@@ -334,8 +329,7 @@ function modHelp() {
         };
 
         var parent = document.getElementById('optlist').parentNode;
-        parent.insertBefore(categorySelect, parent.children[1]);
-        //parent.removeChild(parent.children[1]);
+        parent.insertBefore(categorySelect, parent.children[onMove ? 1 : 0]);
 
         rebuildOptlist('all');
 
@@ -396,11 +390,11 @@ function modHelp() {
     }
 
     function setTextToArchive() {
-        document.getElementsByClassName('post')[0].value = textToArchive;
+        document.getElementsByClassName('post')[0].value = localStorage.textToArchive;
     }
 
     function setTextToTemp() {
-        document.getElementsByClassName('post')[0].value = textToTemp;
+        document.getElementsByClassName('post')[0].value = localStorage.textToTemp;
     }
 
     function setEmptyText() {
@@ -408,7 +402,7 @@ function modHelp() {
     }
 
     function uncheckText() {
-        savedText=document.getElementsByClassName('post')[0].value;
+        savedText = document.getElementsByClassName('post')[0].value;
         setEmptyText();
         msgMoveElem.onchange = function() {checkText();};
     }
@@ -438,11 +432,10 @@ function modHelp() {
     }
 
     function setThemeName() {
-        if (newTopicNameMode) {
-            document.getElementsByName('subject')[0].value = newTopicName;
-        }
-        else {
-            document.getElementsByName('subject')[0].value = 'Выделено из темы ' +
+        if (localStorage.newTopicNameMode === 'true') {
+            document.getElementsByName('subject')[0].value = newTopicName + tid;
+        } else {
+            document.getElementsByName('subject')[0].value = newTopicName +
                 document.getElementsByClassName('postdetails')[0].innerHTML.substr(32);
         }
         document.getElementsByName('subject')[0].onfocus = function() {
@@ -453,7 +446,7 @@ function modHelp() {
 
     function setDest(id) {
         var selectElem = document.getElementById('optlist');
-        if (selectElem > 0) {
+        if (selectElem) {
             selectElem.value = id;
         }
     }
@@ -485,9 +478,10 @@ function modHelp() {
     }
 
     function fromArchive() {
-        var formElem = Array.prototype.filter.apply(document.forms, [function(elem) {
-            return (elem && elem.action && elem.action.indexOf('modcp.php') > -1);
-        }])[0];
+        //var formElem = Array.prototype.filter.apply(document.forms, [function(elem) {
+        //    return (elem && elem.action && elem.action.indexOf('modcp.php') > -1);
+        //}])[0];
+        var formElem = document.getElementsByName('confirm')[0];
         formElem.addEventListener('submit', function(e) {
             if (!confirm('Действительно хотите перенести из Архива?')) {
                 if (e.preventDefault) e.preventDefault();
@@ -500,30 +494,38 @@ function modHelp() {
         switch (action) {
             case 'onmove':
                 if (isArchive(options.forum)) fromArchive();
-                msgMoveElem.checked = leaveMsgOnMv;
-                msgElem.style.display = leaveMsgOnMv ? 'block' : 'none';
-                msgMoveElem.onchange = leaveMsgOnMv ? function() {uncheckText();} : function() {checkText();};
+                document.getElementById('move_bot').style.display = localStorage.leaveMsgOnMv ? 'block' : 'none';
+                msgMoveElem.onchange = localStorage.leaveMsgOnMv ? function() {uncheckText();} : function() {checkText();};
+                msgMoveElem.checked = localStorage.leaveMsgOnMv;
                 break;
             case 'onsplit':
-                msgSplitElemOld.checked = addMsgToOld;
-                msgSplitElemNew.checked = addMsgToNew;
+                document.getElementById('after_split_to_old').checked = localStorage.addMsgToOld === 'true';
+                document.getElementById('after_split_to_new').checked = localStorage.addMsgToNew === 'true';
                 break;
             default:
                 break;
         }
     }
 
+    /*
+     Замечания только по разделению и переносу темы.
+     Если возможно поменять два списка местами. Т.е. сначала выбор категории, потом форума.
+     А так же сделать при разделении темы по умолчанию "мусорку". (вроде бы в прошлых ранних версиях такое было)
+     А при переносе одобренной темы, по умолчанию в профильный "архив" либо в профильный "темп" если релиз не одобрен.
+     (вроде бы в прошлых ранних версиях такое было)
+     */
     var oldForumElems = document.getElementsByName('f');
     var old = parseInt(oldForumElems[oldForumElems.length - 1].value);
 
     parseCategories();
-    buildCategorySelect();
 
     if (onSplit()) {
+        buildCategorySelect(false);
         formUpdate('onsplit');
         setThemeName();
         setDest(splitTo);
     } else if (onMove()) {
+        buildCategorySelect(true);
         formUpdate('onmove', {'forum': old});
         if (checkApproved) {
             /**
