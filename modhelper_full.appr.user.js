@@ -483,11 +483,8 @@ function modHelp() {
     }
 
     function fromArchive() {
-        //var formElem = Array.prototype.filter.apply(document.forms, [function(elem) {
-        //    return (elem && elem.action && elem.action.indexOf('modcp.php') > -1);
-        //}])[0];
         var formElem = document.getElementsByName('confirm')[0];
-        formElem.addEventListener('submit', function(e) {
+        formElem.addEventListener('click', function(e) {
             if (!confirm('Действительно хотите перенести из Архива?')) {
                 if (e.preventDefault) e.preventDefault();
                 e.returnValue = false;
