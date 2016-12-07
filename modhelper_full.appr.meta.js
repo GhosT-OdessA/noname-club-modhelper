@@ -24,10 +24,14 @@
 // @match         http://nnm-club.me/forum/modcp.php*
 // @match         https://*.nnm-club.me/forum/modcp.php*
 // @match         https://nnm-club.me/forum/modcp.php*
-// @include       http://dsenxis5txr4zbxe.onion/forum/modcp.php*
-// @include       https://dsenxis5txr4zbxe.onion/forum/modcp.php*
-// @match         http://dsenxis5txr4zbxe.onion/forum/modcp.php*
-// @match         https://dsenxis5txr4zbxe.onion/forum/modcp.php*
+// @include       http://nnm-club.i2p.onion/forum/modcp.php*
+// @include       https://nnm-club.i2p.onion/forum/modcp.php*
+// @match         http://nnm-club.i2p.onion/forum/modcp.php*
+// @match         https://nnm-club.i2p.onion/forum/modcp.php*
+// @include       http://nnmclub5toro7u65.onion/forum/modcp.php*
+// @include       https://nnmclub5toro7u65.onion/forum/modcp.php*
+// @match         http://nnmclub5toro7u65.onion/forum/modcp.php*
+// @match         https://nnmclub5toro7u65.onion/forum/modcp.php*
 // @grant         none
 // ==/UserScript==
 //
