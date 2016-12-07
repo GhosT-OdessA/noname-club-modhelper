@@ -2,7 +2,7 @@
 // @name          NoNaMe-Club ModHelper
 // @namespace     NoNaMe-Club.Scripts
 // @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.1.0.1
+// @version       2.1.0.2
 // @original author    Kaener
 // @author        Team of co-authors NNM-Club
 // @homepage      https://github.com/ElSwanko/noname-club-modhelper
@@ -24,10 +24,14 @@
 // @match         http://nnm-club.me/forum/modcp.php*
 // @match         https://*.nnm-club.me/forum/modcp.php*
 // @match         https://nnm-club.me/forum/modcp.php*
-// @include       http://dsenxis5txr4zbxe.onion/forum/modcp.php*
-// @include       https://dsenxis5txr4zbxe.onion/forum/modcp.php*
-// @match         http://dsenxis5txr4zbxe.onion/forum/modcp.php*
-// @match         https://dsenxis5txr4zbxe.onion/forum/modcp.php*
+// @include       http://nnm-club.i2p.onion/forum/modcp.php*
+// @include       https://nnm-club.i2p.onion/forum/modcp.php*
+// @match         http://nnm-club.i2p.onion/forum/modcp.php*
+// @match         https://nnm-club.i2p.onion/forum/modcp.php*
+// @include       http://nnmclub5toro7u65.onion/forum/modcp.php*
+// @include       https://nnmclub5toro7u65.onion/forum/modcp.php*
+// @match         http://nnmclub5toro7u65.onion/forum/modcp.php*
+// @match         https://nnmclub5toro7u65.onion/forum/modcp.php*
 // @grant         none
 // ==/UserScript==
 //
@@ -54,9 +58,9 @@ function OpenDiv() {
          * true -- Выделено из темы + <ID темы>, false -- Выделено из темы + <Название темы> */
         localStorage.newTopicNameMode = false;
         /** Текст сообщения об отправке в архив */
-        localStorage.textToArchive = "На трекере доступна новая версия";
+        localStorage.textToArchive = "На трекере доступна новая версия: ";
         /** Текст сообщения об отправке в темп */
-        localStorage.textToTemp = "Нуждается в дооформлении";
+        localStorage.textToTemp = "Нуждается в дооформлении согласно требования модератора.";
         localStorage.testLocalStorage = 1;
     }
 
@@ -239,7 +243,8 @@ function modHelp() {
     };
 
     /** Текущий номер темы */
-    var tid = document.getElementsByName('t')[0].value;
+    var tid = document.getElementsByName('t')[0];
+    if (tid) tid = tid.value;
 
     /** В этот форум переносим, если мы не узнали исходный форум и не проверяли или тема не одобрена */
     var moveNotApprovedTo = temp.trash;
@@ -292,9 +297,11 @@ function modHelp() {
             var optgroup = select.children[i];
             var category = categories[category_index[i]];
             category.label = optgroup.label;
+          console.log('' + category.label);
             var forums = map[category_index[i]];
             for (var j = 0; j < optgroup.children.length; j++) {
                 var option = optgroup.children[j];
+              console.log('' + option.text);
                 var forum = forumObj(parseInt(option.value), option.text, option.selected, option.disabled);
                 category.forums.push(forum);
                 if (forums) {
@@ -334,9 +341,10 @@ function modHelp() {
         rebuildOptlist('all');
 
         function rebuildOptlist(selectedKey) {
-            var select = document.createElement('select');
-            select.style.width = '400px';
-            select.size = selectSize;
+            var select = document.getElementById('optlist');
+            while (select.children.length > 0) {
+                select.removeChild(select.children[0]);
+            }
 
             if (selectedKey === 'all') {
                 for (var key in categories) {
@@ -361,11 +369,8 @@ function modHelp() {
                 select.appendChild(buildOptgroup(selectedKey));
             }
 
-            var old = document.getElementById('optlist');
-            old.parentNode.insertBefore(select, old);
-            old.parentNode.removeChild(old);
-            select.name = 'new_forum';
-            select.id = 'optlist';
+            select.style.width = '400px';
+            select.size = selectSize;
 
             function buildOptgroup(categoryKey) {
                 var optgroup = document.createElement('optgroup');
@@ -552,6 +557,12 @@ function modHelp() {
             setTextToTemp();
             setDest(moveNotApprovedToF(old));
         }
+    } else {
+        /** Массовый перенос тем из раздела */
+        buildCategorySelect(true);
+        formUpdate('onmove', {'forum': old});
+        setTextToArchive();
+        setDest(moveApprovedToF(old));      
     }
 }
 
