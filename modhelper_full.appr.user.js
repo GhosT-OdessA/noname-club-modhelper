@@ -1,46 +1,49 @@
 // ==UserScript==
-// @name          NoNaMe-Club ModHelper
-// @namespace     NoNaMe-Club.Scripts
-// @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.1.0.2
-// @original author    Kaener
-// @author        Team of co-authors NNM-Club
-// @homepage      https://github.com/ElSwanko/noname-club-modhelper
-// @updateURL     https://github.com/ElSwanko/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
-// @downloadURL   https://github.com/ElSwanko/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
-// @include       http://*.nnmclub.to/forum/modcp.php*
-// @include       http://nnmclub.to/forum/modcp.php*
-// @include       https://*.nnmclub.to/forum/modcp.php*
-// @include       https://nnmclub.to/forum/modcp.php*
-// @match         http://*.nnmclub.to/forum/modcp.php*
-// @match         http://nnmclub.to/forum/modcp.php*
-// @match         https://*.nnmclub.to/forum/modcp.php*
-// @match         https://nnmclub.to/forum/modcp.php*
-// @include       http://*.nnm-club.me/forum/modcp.php*
-// @include       http://nnm-club.me/forum/modcp.php*
-// @include       https://*.nnm-club.me/forum/modcp.php*
-// @include       https://nnm-club.me/forum/modcp.php*
-// @match         http://*.nnm-club.me/forum/modcp.php*
-// @match         http://nnm-club.me/forum/modcp.php*
-// @match         https://*.nnm-club.me/forum/modcp.php*
-// @match         https://nnm-club.me/forum/modcp.php*
-// @include       http://nnm-club.i2p.onion/forum/modcp.php*
-// @include       https://nnm-club.i2p.onion/forum/modcp.php*
-// @match         http://nnm-club.i2p.onion/forum/modcp.php*
-// @match         https://nnm-club.i2p.onion/forum/modcp.php*
-// @include       http://nnmclub5toro7u65.onion/forum/modcp.php*
-// @include       https://nnmclub5toro7u65.onion/forum/modcp.php*
-// @match         http://nnmclub5toro7u65.onion/forum/modcp.php*
-// @match         https://nnmclub5toro7u65.onion/forum/modcp.php*
-// @grant         none
+// @name            NoNaMe-Club ModHelper
+// @namespace       NoNaMe-Club.Scripts
+// @description     Замена стандартного варианта (корень Темпа) при переносе на профильные форумы. Версия с проверкой на «одобреность» темы.
+// @version         2.1.0.3
+// @original author Kaener
+// @author          Team of co-authors NNM-Club
+// @homepage        https://github.com/ElSwanko/noname-club-modhelper
+// @updateURL       https://github.com/ElSwanko/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
+// @downloadURL     https://github.com/ElSwanko/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
+// @include         http://*.nnmclub.to/forum/modcp.php*
+// @include         http://nnmclub.to/forum/modcp.php*
+// @include         https://*.nnmclub.to/forum/modcp.php*
+// @include         https://nnmclub.to/forum/modcp.php*
+// @match           http://*.nnmclub.to/forum/modcp.php*
+// @match           http://nnmclub.to/forum/modcp.php*
+// @match           https://*.nnmclub.to/forum/modcp.php*
+// @match           https://nnmclub.to/forum/modcp.php*
+// @include         http://*.nnm-club.me/forum/modcp.php*
+// @include         http://nnm-club.me/forum/modcp.php*
+// @include         https://*.nnm-club.me/forum/modcp.php*
+// @include         https://nnm-club.me/forum/modcp.php*
+// @match           http://*.nnm-club.me/forum/modcp.php*
+// @match           http://nnm-club.me/forum/modcp.php*
+// @match           https://*.nnm-club.me/forum/modcp.php*
+// @match           https://nnm-club.me/forum/modcp.php*
+// @include         http://nnm-club.i2p.onion/forum/modcp.php*
+// @include         https://nnm-club.i2p.onion/forum/modcp.php*
+// @match           http://nnm-club.i2p.onion/forum/modcp.php*
+// @match           https://nnm-club.i2p.onion/forum/modcp.php*
+// @include         http://nnmclub5toro7u65.onion/forum/modcp.php*
+// @include         https://nnmclub5toro7u65.onion/forum/modcp.php*
+// @match           http://nnmclub5toro7u65.onion/forum/modcp.php*
+// @match           https://nnmclub5toro7u65.onion/forum/modcp.php*
+// @grant           none
 // ==/UserScript==
 //
 
-// Проверка наличия ранее сделаных настроек пользователя и при их отсутствии при первом запуске будет предложено заполнение значений переменных
-// пользователем для индивидуальной настройки под себя.
+// Проверка наличия ранее сделаных настроек пользователя и при их отсутствии при первом запуске будет предложено 
+// заполненить значения переменных пользователем для индивидуальной настройки под свои нужды.
 
 /** проверять тему на "одобреность"? true - проверять, false - не проверять */
 var checkApproved = true;
+
+/** Таймаут ожидания загрузки страницы, для проверки темы на одобренность (в секундах) */
+var checKTimeout = 5;
 
 /** Настройка выпадающего списка форумов. 1 - рисуется обычный выпадающий список, 2 и более - рисуется прокручиваемая форма */
 var selectSize = 1;
@@ -65,24 +68,43 @@ function OpenDiv() {
     }
 
     var div = document.createElement('div');
-    div.innerHTML = "<div style='position:fixed;z-index:100;width:100%;height:100%;top:0px;left:0px;' id='moderator_menu'>" +
-              "       <div style='position:relative;width:100%;height:100%'>" +
-              "               <div style='position:absolute;top:0px;left:0px;background-color:gray;filter:alpha(opacity=70);-moz-opacity: 0.7;opacity: 0.7;z-index:200;width:100%;height:100%'></div>" +
-              "               <div style='position:absolute;top:0px;margin:auto;z-index:300;width: 100%;height:500px;'>" +
-              "                        <div style='box-shadow: 0 0 10px 2px black; margin:auto;min-width:400px;width:60%;background-color: white;padding: 40px;margin-top:100px'>" +
-              '<form>' +
-              '<input id="leaveMsgOnMv" type="checkbox">Оставлять сообщение о переносе (делает активным поле ввода текста примечания)</input><br>' +
-              '<input id="addMsgToOld" type="checkbox">Оставлять сообщение о разделении в старой теме</input><br>' +
-              '<input id="addMsgToNew" type="checkbox">Добавлять сообщение о разделении в новую тему</input><br><br>' +
-              '<input id="newTopicNameMode" type="checkbox">Выводить в название темы цифровое значение <br>Условие формирования названия новой темы при разделении темы: <br>true - Выделено из темы + ID (цифровое значение) темы <br>false - Выделено из темы + Название темы текстом</input><br>' +
-              '<br><br><table width=100%><tr><td width="40%" align="left"><font size="3px">Текст причины переноса темы в Архив:</font></td><td><input style="width: 80%; margin-top: 15px;" id="textToArchive" type="text"><br><br></td></tr>' +
-              '<tr><td width="40%" align="left"><font size="3px">Текст причины переноса темы в Темп:</font></td><td><input style=width:80% id="textToTemp" type="text"></td></tr></table><br><br>' +
-              '<table width=100%><tr><td align="left"><input type="button" value="Сохранить изменения" onclick="SaveSettingAndDeleteDiv(1)" style="background-color: #7FFF00;"></td><td align="center"><input type="button" value="Сброс настроек" onclick="SaveSettingAndDeleteDiv(2)"></td><td align="right"><input type="button" value="Закрыть без изменения" onclick="SaveSettingAndDeleteDiv(false)" style="background-color: #FF6347;"></td></tr></table>' +
-              '</form>' +
-              "                        </div>"+
-              "               </div>" +
-              "       </div>" +
-              "</div>";
+    div.innerHTML = "" +
+        "<div style='position:fixed;z-index:100;width:100%;height:100%;top:0;left:0;' id='moderator_menu'>" +
+        "    <div style='position:relative;width:100%;height:100%'>" +
+        "        <div style='position:absolute;top:0;left:0;background-color:gray;filter:alpha(opacity=70);" +
+        "                    -moz-opacity:0.7;opacity:0.7;z-index:200;width:100%;height:100%'></div>" +
+        "        <div style='position:absolute;top:0;margin:auto;z-index:300;width: 100%;height:500px;'>" +
+        "            <div style='box-shadow: 0 0 10px 2px black; min-width:400px;width:60%;background-color:white;padding:40px;margin:100px auto auto;'>" +
+        '<form>' +
+        '<input id="leaveMsgOnMv" type="checkbox">Оставлять сообщение о переносе (активирует поле ввода текста примечания)</input><br>' +
+        '<input id="addMsgToOld" type="checkbox">Оставлять сообщение о разделении в старой теме</input><br>' +
+        '<input id="addMsgToNew" type="checkbox">Добавлять сообщение о разделении в новую тему</input><br>' +
+        '<br>' +
+        '<input id="newTopicNameMode" type="checkbox">Выводить в название темы цифровое значение</input><br>' +
+        '<div style="padding: 10px 0 0 25px">Условие формирования названия новой темы при разделении темы: <br>' +
+        'true - Выделено из темы + ID (цифровое значение) темы <br>' +
+        'false - Выделено из темы + Название темы текстом</div><br>' +
+        '<table width=100%>' +
+        '<tr>' +
+        '    <td width="41%" height="30px" align="left" style="font-size: medium">Текст причины переноса темы в Архив</td>' +
+        '    <td><input style="width: 90%; font-size: medium" id="textToArchive" type="text"></td>' +
+        '</tr>' +
+        '<tr>' +
+        '    <td width="41%" height="30px" align="left" style="font-size: medium">Текст причины переноса темы в Темп</td>' +
+        '    <td><input style="width: 90%; font-size: medium" id="textToTemp" type="text"></td>' +
+        '</tr>' +
+        '</table><br>' +
+        '<br>' +
+        '<table width=100%><tr>' +
+        '    <td align="left"><input type="button" value="Сохранить изменения" onclick="SaveSettingAndDeleteDiv(1)" style="background-color: #7FFF00;"></td>' +
+        '    <td align="center"><input type="button" value="Сброс настроек" onclick="SaveSettingAndDeleteDiv(2)"></td>' +
+        '    <td align="right"><input type="button" value="Закрыть без изменения" onclick="SaveSettingAndDeleteDiv(false)" style="background-color: #FF6347;"></td>' +
+        '</tr></table>' +
+        '</form>' +
+        "            </div>"+
+        "        </div>" +
+        "    </div>" +
+        "</div>";
     document.body.appendChild(div);
 
     document.getElementById('leaveMsgOnMv').checked = (localStorage.leaveMsgOnMv === "true");
@@ -190,7 +212,7 @@ function modHelp() {
         'video': 145
     };
 
-    /* Номера архивов для соответствующих категорий */
+    /** Номера архивов для соответствующих категорий */
     var archive = {
         'anime': 169,
         'apple': 1080,
@@ -214,9 +236,9 @@ function modHelp() {
     };
 
     /**
-     * Карта форумов для определения категории по номеру форума
+     * Карта форумов для определения категории по номеру форума.
      * Ввиду некоторой запутанности форума выделяется ещё несколько дополнительных категорий,
-     * для которых заведены свои архивы и темп-форуму. При этом они находятся внутри основных категорий.
+     * для которых заведены свои архивы и темп-форумы. При этом они находятся внутри основных категорий.
      * Для этого оставил их номера с ручным заполнением и поставил вперёд.
      * Т.о. при поиске категории по номеру форума, сначала проверяются они, а потом уже основные категории.
      */
@@ -254,9 +276,6 @@ function modHelp() {
     var splitTo = temp.trash;
     /** Название темы при выделении */
     var newTopicName = 'Выделено из темы ';
-
-    var savedText;
-    var msgMoveElem = document.getElementById('insert_msg');
 
     /**
      * Описание категории
@@ -297,11 +316,9 @@ function modHelp() {
             var optgroup = select.children[i];
             var category = categories[category_index[i]];
             category.label = optgroup.label;
-          console.log('' + category.label);
             var forums = map[category_index[i]];
             for (var j = 0; j < optgroup.children.length; j++) {
                 var option = optgroup.children[j];
-              console.log('' + option.text);
                 var forum = forumObj(parseInt(option.value), option.text, option.selected, option.disabled);
                 category.forums.push(forum);
                 if (forums) {
@@ -310,6 +327,8 @@ function modHelp() {
             }
         }
     }
+
+    parseCategories();
 
     /**
      * Строим дополнительный список только с категориями форума.
@@ -394,26 +413,30 @@ function modHelp() {
         }
     }
 
+    var savedText;
+    var msgElem = document.getElementsByClassName('post')[0];
+    var msgMoveElem = document.getElementById('insert_msg');
+
     function setTextToArchive() {
-        document.getElementsByClassName('post')[0].value = localStorage.textToArchive;
+        msgElem.value = localStorage.textToArchive;
     }
 
     function setTextToTemp() {
-        document.getElementsByClassName('post')[0].value = localStorage.textToTemp;
+        msgElem.value = localStorage.textToTemp;
     }
 
     function setEmptyText() {
-        document.getElementsByClassName('post')[0].value = '';
+        msgElem.value = '';
     }
 
     function uncheckText() {
-        savedText = document.getElementsByClassName('post')[0].value;
+        savedText = msgElem.value;
         setEmptyText();
         msgMoveElem.onchange = function() {checkText();};
     }
 
     function checkText() {
-        document.getElementsByClassName('post')[0].value = savedText;
+        msgElem.value = savedText;
         msgMoveElem.onchange = function() {uncheckText();};
     }
 
@@ -437,13 +460,13 @@ function modHelp() {
     }
 
     function setThemeName() {
+        var subjectElem = document.getElementsByName('subject')[0];
         if (localStorage.newTopicNameMode === 'true') {
-            document.getElementsByName('subject')[0].value = newTopicName + tid;
+            subjectElem.value = newTopicName + tid;
         } else {
-            document.getElementsByName('subject')[0].value = newTopicName +
-                document.getElementsByClassName('postdetails')[0].innerHTML.substr(32);
+            subjectElem.value = newTopicName + document.getElementsByClassName('postdetails')[0].innerHTML.substr(32);
         }
-        document.getElementsByName('subject')[0].onfocus = function() {
+        subjectElem.onfocus = function() {
             if (!done) this.value = '';
             done = true;
         };
@@ -509,10 +532,43 @@ function modHelp() {
         }
     }
 
+    function loadPage(url, onload) {
+        try {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState != 4) return;
+                clearTimeout(timeout);
+                if (xhr.status == 200) {
+                    /**
+                     * Выкусываем только тело страницы, без всяких заголовков и вычищаем все ссылки, чтобы ускорить её подгрузку.
+                     * Самому писать регулярку было лениво, нагуглил первое подходящее решение, но оно зачищает URL вместе
+                     * с закрывающими кавычками, поэтому вот такой обходной манёвр сделал.
+                     */
+                    var response = /<body[^>]*>([\s\S]+)<\/body>/i.exec(xhr.responseText + '</body></html>')[1].
+                        replace(/'(http|https):\/\/(\w+:?\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/g, '\'http://localhost/\'').
+                        replace(/"(http|https):\/\/(\w+:?\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/g, '\"http://localhost/\"');
+                    var page = document.body.appendChild(document.createElement("div"));
+                    page.style.display = 'none';
+                    page.innerHTML = response;
+                    onload(page);
+                    document.removeChild(page);
+                } else {
+                    console.log('Failed to load page ' + url + ': ' + xhr.response + ', ' + xhr.responseText);
+                }
+            };
+            var timeout = setTimeout(function () {
+                console.log('Check for approved failed due to timeout');
+                xhr.abort();
+            }, checKTimeout * 1000);
+            xhr.send('');
+        } catch (e) {
+            console.warn('Failed to load page ' + url + ': ' + e.message);
+        }
+    }
+
     var oldForumElems = document.getElementsByName('f');
     var old = parseInt(oldForumElems[oldForumElems.length - 1].value);
-
-    parseCategories();
 
     if (onSplit()) {
         buildCategorySelect(false);
@@ -526,29 +582,22 @@ function modHelp() {
             /**
              * Оптимизация отзывчивости скрита. Не ждём завершения запроса, чтобы заполнить темы и выбрать форум.
              * т.к. при проблемах с доступом к форуму может отрабатывать достаточно долго.
-             * В таком случае быстрее будет вручную выбрать нужный форум и набить сообщение. */
-            $.ajax({
-                url: '/forum/viewtopic.php?t=' + tid,
-                success: function (result) {
-                    var approved = $('tr.row1 > td.genmed', result);
-                    if (typeof(approved) !== 'undefined' && approved.length > 11 &&
-                        (approved[11].innerHTML.indexOf("Оформление проверено ") > -1)) {
-                        if (isArchive(old) || isTemp(old)) {
-                            setEmptyText();
-                            setDest(old);
-                        } else {
-                            setTextToArchive();
-                            setDest(moveApprovedToF(old));
-                        }
+             * В таком случае быстрее будет вручную выбрать нужный форум и набить сообщение.
+             */
+            loadPage('/forum/viewtopic.php?t=' + tid, function (page) {
+                var approved = page.querySelectorAll('tr.row1 > td.genmed');
+                if (approved && approved.length > 11 && approved[11].innerHTML.indexOf('Оформление проверено ') > -1) {
+                    if (isArchive(old) || isTemp(old)) {
+                        setEmptyText();
+                        setDest(old);
                     } else {
-                        setTextToTemp();
-                        setDest(moveNotApprovedToF(old));
+                        setTextToArchive();
+                        setDest(moveApprovedToF(old));
                     }
-                },
-                error: function (result) {
-                    console.error("AJAX error: " + result);
-                },
-                async: true
+                } else {
+                    setTextToTemp();
+                    setDest(moveNotApprovedToF(old));
+                }
             });
         } else {
             setTextToTemp();
@@ -559,27 +608,20 @@ function modHelp() {
         buildCategorySelect(true);
         formUpdate('onmove', {'forum': old});
         setTextToArchive();
-        setDest(moveApprovedToF(old));      
+        setDest(moveApprovedToF(old));
     }
 }
 
-function checkJquery() {
-    if (!checkApproved) { //if we don't need jQuery
-        modHelp();
-    } else if (typeof(window.jQuery) !== 'undefined') {// Opera!
-        $ = window.jQuery;
-        modHelp();
-    } else if (typeof(unsafeWindow.jQuery) !== 'undefined') {  // Firefox!
-        $ = unsafeWindow.jQuery;
-        modHelp();
-    } else { // Chrome and others
-        var script = document.createElement("script");
-        script.textContent = "var checkApproved = " + checkApproved + ";\nvar $ = window.jQuery;\n" + "(" + modHelp.toString() + ")();";
-        document.body.appendChild(script);
-    }
+function drawInterface() {
     var div = document.createElement('div');
-    div.innerHTML = "<div style='position:absolute;z-index:100;top:14px;left:14px; id='moderator_setting'>" +
-        "<img title='Изменить настройки скрипта модератора' onclick='OpenDiv()' id='moderator_settings_img' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABS0lEQVRIx2NgGETABYg7oNiFFhY0APF/KG6g1DAdIGYi0QJ9Yg13AuKvQDwXyRJ+IF6MZAGILYCkpwqI/wJxPCHDtaCGwwwCWTIJiH8gicHwTyCeDMS1SGIgSzzwWcAIxFOxGEYs3gjEbIR8AQqWJVg0HwTiLig+hEV+DxBzEhsP05E0fsCRLN2A+COSumnEGi4IxL+RNHrjUeuPFicCxGSiFUiajhHhoFNI6pfjyowNOCKthwgL+nHobaCWBX3EWGADxOVQPJeCIJqDZI4NLg380AgjNZJ/4YtkdDANSeNHqEHoIBCIP5GTTEGgEUuYnoAWDZOhbHR5UOZkJsbwDgqKitVAzEKomP6DpGEXEM9Ey3gw/B2IJ6Iliv84ghMFxEAt2Y1UtoiglU+LoYkBVnbNIbUicsdScOGrcJiIcTldq0xswIaYTER3AADyDbmZw/+N1gAAAABJRU5ErkJggg=='>" +
+    div.innerHTML = "<div style='position:absolute;z-index:100;top:14px;left:14px;' id='moderator_setting'>" +
+        "<img title='Изменить настройки скрипта модератора' onclick='OpenDiv()' id='moderator_settings_img' " +
+        "src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABS0lEQV" +
+        "RIx2NgGETABYg7oNiFFhY0APF/KG6g1DAdIGYi0QJ9Yg13AuKvQDwXyRJ+IF6MZAGILYCkpwqI/wJxPCHDtaCGwwwCWTIJiH8gicHwTyC" +
+        "eDMS1SGIgSzzwWcAIxFOxGEYs3gjEbIR8AQqWJVg0HwTiLig+hEV+DxBzEhsP05E0fsCRLN2A+COSumnEGi4IxL+RNHrjUeuPFicCxGSi" +
+        "FUiajhHhoFNI6pfjyowNOCKthwgL+nHobaCWBX3EWGADxOVQPJeCIJqDZI4NLg380AgjNZJ/4YtkdDANSeNHqEHoIBCIP5GTTEGgEUuYn" +
+        "oAWDZOhbHR5UOZkJsbwDgqKitVAzEKomP6DpGEXEM9Ey3gw/B2IJ6Iliv84ghMFxEAt2Y1UtoiglU+LoYkBVnbNIbUicsdScOGrcJiIcT" +
+        "ldq0xswIaYTER3AADyDbmZw/+N1gAAAABJRU5ErkJggg=='>" +
         "</div>";
     document.body.appendChild(div);
 
@@ -603,7 +645,8 @@ function loadingHelper() {
         isLoaded = true;
         window.removeEventListener("load", loadingHelper, false);
         window.removeEventListener("DOMContentLoaded", loadingHelper, false);
-        checkJquery();
+        drawInterface();
+        modHelp();
     }
 }
 
@@ -611,8 +654,7 @@ window.addEventListener('DOMContentLoaded', loadingHelper, false);
 window.addEventListener('load', loadingHelper, false);
 
 window.onerror = function(msg, url, line, col, error) {
-    // Note that col & error are new to the HTML 5 spec and may not be
-    // supported in every browser.  It worked for me in Chrome.
+    // Note that col & error are new to the HTML 5 spec and may not be supported in every browser. It worked for me in Chrome.
     var extra = !col ? '' : '\ncolumn: ' + col;
     extra += !error ? '' : '\nerror: ' + error;
 
