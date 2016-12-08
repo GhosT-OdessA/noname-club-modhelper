@@ -2,7 +2,7 @@
 // @name            NoNaMe-Club ModHelper
 // @namespace       NoNaMe-Club.Scripts
 // @description     Замена стандартного варианта (корень Темпа) при переносе на профильные форумы. Версия с проверкой на «одобреность» темы.
-// @version         2.1.0.3
+// @version         2.1.0.4
 // @original author Kaener
 // @author          Team of co-authors NNM-Club
 // @homepage        https://github.com/ElSwanko/noname-club-modhelper
@@ -36,14 +36,11 @@
 // ==/UserScript==
 //
 
-// Проверка наличия ранее сделаных настроек пользователя и при их отсутствии при первом запуске будет предложено 
+// Проверка наличия ранее сделаных настроек пользователя и при их отсутствии при первом запуске будет предложено
 // заполненить значения переменных пользователем для индивидуальной настройки под свои нужды.
 
-/** проверять тему на "одобреность"? true - проверять, false - не проверять */
-var checkApproved = true;
-
 /** Таймаут ожидания загрузки страницы, для проверки темы на одобренность (в секундах) */
-var checKTimeout = 5;
+var checkTimeout = 5;
 
 /** Настройка выпадающего списка форумов. 1 - рисуется обычный выпадающий список, 2 и более - рисуется прокручиваемая форма */
 var selectSize = 1;
@@ -51,12 +48,14 @@ var selectSize = 1;
 function OpenDiv() {
     /** Выставляем настройки по-умолчанию */
     if (localStorage.testLocalStorage === undefined){
-        /** Оставлять сообщение о переносе:                 true -- да, false -- нет */
-        localStorage.leaveMsgOnMv = true;
-        /** Оставлять сообщение о разделении в старой теме: true -- да, false -- нет */
-        localStorage.addMsgToOld = false;
-        /** Оставлять сообщение о разделении в новой теме:  true -- да, false -- нет */
-        localStorage.addMsgToNew = true;
+        /**
+         * Проверять при переносе тему на одобреность или нет.
+         * Если проверять, то тема выполняется дополнительный запрос, что может занять некоторое время,
+         * особенно при затруднениях с доступом к клубу. При этом, если тема одобрена, то для переноса выбирается
+         * профильный архив, иначе - профильный темп.
+         * Если не проверять, то всегда выбирается профильный темп.
+         */
+        localStorage.checkApproved = true;
         /** Режим формирования названия новой темы при разделении:
          * true -- Выделено из темы + <ID темы>, false -- Выделено из темы + <Название темы> */
         localStorage.newTopicNameMode = false;
@@ -76,14 +75,18 @@ function OpenDiv() {
         "        <div style='position:absolute;top:0;margin:auto;z-index:300;width: 100%;height:500px;'>" +
         "            <div style='box-shadow: 0 0 10px 2px black; min-width:400px;width:60%;background-color:white;padding:40px;margin:100px auto auto;'>" +
         '<form>' +
-        '<input id="leaveMsgOnMv" type="checkbox">Оставлять сообщение о переносе (активирует поле ввода текста примечания)</input><br>' +
-        '<input id="addMsgToOld" type="checkbox">Оставлять сообщение о разделении в старой теме</input><br>' +
-        '<input id="addMsgToNew" type="checkbox">Добавлять сообщение о разделении в новую тему</input><br>' +
-        '<br>' +
-        '<input id="newTopicNameMode" type="checkbox">Выводить в название темы цифровое значение</input><br>' +
+        '<input id="newTopicNameMode" type="checkbox">Выводить в название темы цифровое значение.</input><br>' +
         '<div style="padding: 10px 0 0 25px">Условие формирования названия новой темы при разделении темы: <br>' +
-        'true - Выделено из темы + ID (цифровое значение) темы <br>' +
-        'false - Выделено из темы + Название темы текстом</div><br>' +
+        '<strong>true</strong> - Выделено из темы + ID (цифровое значение) темы;<br>' +
+        '<strong>false</strong> - Выделено из темы + Название темы текстом.</div><br>' +
+        '<input id="checkApproved" type="checkbox">Проверять при переносе тему на одобренность.</input><br>' +
+        '<div style="padding: 10px 0 0 25px"><strong>false</strong> - не проверять, тема всегда переносится в профильный темп;<br>' +
+        '<strong>true</strong> - проверять, одобренная тема переносится в профильный архив, неодобренная - в профильный темп.<br><br>' +
+        '<strong>Важно!</strong> Для проверки на одобренность выполняется дополнительный запрос, ' +
+        'который занимает некоторое время. Выбор целевого форума произойдёт после выполнения запроса.<br>' +
+        'По-умолчанию на запрос выделяется ' + localStorage.checkTimeout + ' секунд, после чего запрос отменяется.<br>' +
+        'В условиях затруднённого доступа к клубу рекомендуется отключать проверку.<br></div><br>' +
+        '<br>' +
         '<table width=100%>' +
         '<tr>' +
         '    <td width="41%" height="30px" align="left" style="font-size: medium">Текст причины переноса темы в Архив</td>' +
@@ -107,9 +110,7 @@ function OpenDiv() {
         "</div>";
     document.body.appendChild(div);
 
-    document.getElementById('leaveMsgOnMv').checked = (localStorage.leaveMsgOnMv === "true");
-    document.getElementById('addMsgToOld').checked = (localStorage.addMsgToOld === "true");
-    document.getElementById('addMsgToNew').checked = (localStorage.addMsgToNew === "true");
+    document.getElementById('checkApproved').checked = (localStorage.checkApproved === "true");
     document.getElementById('newTopicNameMode').checked = (localStorage.newTopicNameMode === "true");
     document.getElementById('textToArchive').value = localStorage.textToArchive;
     document.getElementById('textToTemp').value = localStorage.textToTemp;
@@ -117,22 +118,18 @@ function OpenDiv() {
 
 function SaveSettingAndDeleteDiv(i) {
     if (i == 1) {
-        localStorage.leaveMsgOnMv = document.getElementById('leaveMsgOnMv').checked;
-        localStorage.addMsgToOld = document.getElementById('addMsgToOld').checked;
-        localStorage.addMsgToNew = document.getElementById('addMsgToNew').checked;
+        localStorage.checkApproved = document.getElementById('checkApproved').checked;
         localStorage.newTopicNameMode = document.getElementById('newTopicNameMode').checked;
         localStorage.textToArchive = document.getElementById('textToArchive').value;
         localStorage.textToTemp = document.getElementById('textToTemp').value;
         localStorage.testLocalStorage = 1;
         location.reload();
     } else if (i == 2) {
-        localStorage.removeItem("leaveMsgOnMv");
-        localStorage.removeItem("addMsgToOld");
-        localStorage.removeItem("addMsgToNew");
-        localStorage.removeItem("newTopicNameMode");
-        localStorage.removeItem("textToArchive");
-        localStorage.removeItem("textToTemp");
-        localStorage.removeItem("testLocalStorage");
+        localStorage.removeItem('checkApproved');
+        localStorage.removeItem('newTopicNameMode');
+        localStorage.removeItem('textToArchive');
+        localStorage.removeItem('textToTemp');
+        localStorage.removeItem('testLocalStorage');
         location.reload();
     }
     var div = document.getElementById('moderator_menu').parentNode;
@@ -274,8 +271,12 @@ function modHelp() {
     var moveApprovedTo = temp.trash;
     /** В этот форум выделяем */
     var splitTo = temp.trash;
+
+    /** Пользователь */
+    var menuItems = document.querySelectorAll('a.mainmenu');
+    var user = menuItems[menuItems.length - 1].text.split(' ')[2];
     /** Название темы при выделении */
-    var newTopicName = 'Выделено из темы ';
+    var newTopicName = 'Выделено ' + user + ' из темы ';
 
     /**
      * Описание категории
@@ -413,9 +414,7 @@ function modHelp() {
         }
     }
 
-    var savedText;
     var msgElem = document.getElementsByClassName('post')[0];
-    var msgMoveElem = document.getElementById('insert_msg');
 
     function setTextToArchive() {
         msgElem.value = localStorage.textToArchive;
@@ -423,21 +422,6 @@ function modHelp() {
 
     function setTextToTemp() {
         msgElem.value = localStorage.textToTemp;
-    }
-
-    function setEmptyText() {
-        msgElem.value = '';
-    }
-
-    function uncheckText() {
-        savedText = msgElem.value;
-        setEmptyText();
-        msgMoveElem.onchange = function() {checkText();};
-    }
-
-    function checkText() {
-        msgElem.value = savedText;
-        msgMoveElem.onchange = function() {uncheckText();};
     }
 
     function findGroup(old) {
@@ -449,14 +433,16 @@ function modHelp() {
         return -1;
     }
 
-    function moveApprovedToF(old) {
+    function moveApproved(old) {
         var key = findGroup(old);
-        return (key !== -1 && typeof(archive[key]) !== 'undefined') ? archive[key] : moveApprovedTo;
+        setDest((key !== -1 && typeof(archive[key]) !== 'undefined') ? archive[key] : moveApprovedTo);
+        setTextToArchive();
     }
 
-    function moveNotApprovedToF(old) {
+    function moveNotApproved(old) {
         var key = findGroup(old);
-        return (key !== -1 && typeof(temp[key]) !== 'undefined') ? temp[key] : moveNotApprovedTo;
+        setDest((key !== -1 && typeof(temp[key]) !== 'undefined') ? temp[key] : moveNotApprovedTo);
+        setTextToTemp();
     }
 
     function setThemeName() {
@@ -515,23 +501,6 @@ function modHelp() {
         }, false);
     }
 
-    function formUpdate(action, options) {
-        switch (action) {
-            case 'onmove':
-                if (isArchive(options.forum)) fromArchive();
-                document.getElementById('move_bot').style.display = localStorage.leaveMsgOnMv ? 'block' : 'none';
-                msgMoveElem.onchange = localStorage.leaveMsgOnMv ? function() {uncheckText();} : function() {checkText();};
-                msgMoveElem.checked = localStorage.leaveMsgOnMv;
-                break;
-            case 'onsplit':
-                document.getElementById('after_split_to_old').checked = localStorage.addMsgToOld === 'true';
-                document.getElementById('after_split_to_new').checked = localStorage.addMsgToNew === 'true';
-                break;
-            default:
-                break;
-        }
-    }
-
     function loadPage(url, onload) {
         try {
             var xhr = new XMLHttpRequest();
@@ -560,7 +529,7 @@ function modHelp() {
             var timeout = setTimeout(function () {
                 console.log('Check for approved failed due to timeout');
                 xhr.abort();
-            }, checKTimeout * 1000);
+            }, localStorage.checkTimeout * 1000);
             xhr.send('');
         } catch (e) {
             console.warn('Failed to load page ' + url + ': ' + e.message);
@@ -572,13 +541,12 @@ function modHelp() {
 
     if (onSplit()) {
         buildCategorySelect(false);
-        formUpdate('onsplit');
         setThemeName();
         setDest(splitTo);
     } else if (onMove()) {
         buildCategorySelect(true);
-        formUpdate('onmove', {'forum': old});
-        if (checkApproved) {
+        if (isArchive(old)) fromArchive();
+        if (localStorage.checkApproved || true) {
             /**
              * Оптимизация отзывчивости скрита. Не ждём завершения запроса, чтобы заполнить темы и выбрать форум.
              * т.к. при проблемах с доступом к форуму может отрабатывать достаточно долго.
@@ -588,27 +556,21 @@ function modHelp() {
                 var approved = page.querySelectorAll('tr.row1 > td.genmed');
                 if (approved && approved.length > 11 && approved[11].innerHTML.indexOf('Оформление проверено ') > -1) {
                     if (isArchive(old) || isTemp(old)) {
-                        setEmptyText();
                         setDest(old);
                     } else {
-                        setTextToArchive();
-                        setDest(moveApprovedToF(old));
+                        moveApproved(old);
                     }
                 } else {
-                    setTextToTemp();
-                    setDest(moveNotApprovedToF(old));
+                    moveNotApproved(old);
                 }
             });
         } else {
-            setTextToTemp();
-            setDest(moveNotApprovedToF(old));
+            moveNotApproved(old);
         }
     } else {
         /** Массовый перенос тем из раздела */
         buildCategorySelect(true);
-        formUpdate('onmove', {'forum': old});
-        setTextToArchive();
-        setDest(moveApprovedToF(old));
+        moveApproved(old);
     }
 }
 
@@ -645,6 +607,7 @@ function loadingHelper() {
         isLoaded = true;
         window.removeEventListener("load", loadingHelper, false);
         window.removeEventListener("DOMContentLoaded", loadingHelper, false);
+        localStorage.checkTimeout = checkTimeout;
         drawInterface();
         modHelp();
     }
