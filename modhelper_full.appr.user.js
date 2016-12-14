@@ -1,99 +1,198 @@
 // ==UserScript==
-// @name          NoNaMe-Club ModHelper
-// @namespace     NoNaMe-Club.Scripts
-// @description   Замена стандартного варианта (корень Темпа), при переносе, на выбранные форумы. Версия с проверкой на «одобреность» темы
-// @version       2.0.0.13
-// @original author    Kaener
-// @author        Team of co-authors NNM-Club
-// @homepage      https://github.com/GhosT-OdessA/noname-club-modhelper
-// @updateURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
-// @downloadURL   https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
-// @include       http://*.nnmclub.to/forum/modcp.php*
-// @include       http://nnmclub.to/forum/modcp.php*
-// @include       https://*.nnmclub.to/forum/modcp.php*
-// @include       https://nnmclub.to/forum/modcp.php*
-// @match         http://*.nnmclub.to/forum/modcp.php*
-// @match         http://nnmclub.to/forum/modcp.php*
-// @match         https://*.nnmclub.to/forum/modcp.php*
-// @match         https://nnmclub.to/forum/modcp.php*
+// @name            NoNaMe-Club ModHelper
+// @namespace       NoNaMe-Club.Scripts
+// @description     Замена стандартного варианта (корень Темпа) при переносе на профильные форумы. Версия с проверкой на «одобреность» темы.
+// @version         2.1.0.5
+// @original author Kaener
+// @author          Team of co-authors NNM-Club
+// @homepage        https://github.com/GhosT-OdessA//noname-club-modhelper
+// @updateURL       https://github.com/GhosT-OdessA//noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
+// @downloadURL     https://github.com/GhosT-OdessA//noname-club-modhelper/raw/master/modhelper_full.appr.user.js
+// @include         http://*.nnmclub.to/forum/modcp.php*
+// @include         http://nnmclub.to/forum/modcp.php*
+// @include         https://*.nnmclub.to/forum/modcp.php*
+// @include         https://nnmclub.to/forum/modcp.php*
+// @match           http://*.nnmclub.to/forum/modcp.php*
+// @match           http://nnmclub.to/forum/modcp.php*
+// @match           https://*.nnmclub.to/forum/modcp.php*
+// @match           https://nnmclub.to/forum/modcp.php*
+// @include         http://*.nnm-club.me/forum/modcp.php*
+// @include         http://nnm-club.me/forum/modcp.php*
+// @include         https://*.nnm-club.me/forum/modcp.php*
+// @include         https://nnm-club.me/forum/modcp.php*
+// @match           http://*.nnm-club.me/forum/modcp.php*
+// @match           http://nnm-club.me/forum/modcp.php*
+// @match           https://*.nnm-club.me/forum/modcp.php*
+// @match           https://nnm-club.me/forum/modcp.php*
+// @include         http://nnm-club.i2p.onion/forum/modcp.php*
+// @include         https://nnm-club.i2p.onion/forum/modcp.php*
+// @match           http://nnm-club.i2p.onion/forum/modcp.php*
+// @match           https://nnm-club.i2p.onion/forum/modcp.php*
+// @include         http://nnmclub5toro7u65.onion/forum/modcp.php*
+// @include         https://nnmclub5toro7u65.onion/forum/modcp.php*
+// @match           http://nnmclub5toro7u65.onion/forum/modcp.php*
+// @match           https://nnmclub5toro7u65.onion/forum/modcp.php*
+// @grant           none
 // ==/UserScript==
 //
 
-// Проверка наличия ранее сделаных настроек пользователя и при их отсутствии при первом запуске будет предложено заполнение значений переменных
-// пользователем для индивидуальной настройки под себя.
-	
+// Проверка наличия ранее сделаных настроек пользователя и при их отсутствии при первом запуске будет предложено
+// заполненить значения переменных пользователем для индивидуальной настройки под свои нужды.
 
+/** Таймаут ожидания загрузки страницы, для проверки темы на одобренность (в секундах) */
+var checkTimeout = 5;
+
+/** Настройка выпадающего списка форумов. 1 - рисуется обычный выпадающий список, 2 и более - рисуется прокручиваемая форма */
+var selectSize = 1;
 
 function OpenDiv() {
-    var div = document.createElement('div');
-    div.innerHTML = "<div style='position:fixed;z-index:100;width:100%;height:100%;top:0px;left:0px;' id='moderator_menu'>"
-            + "       <div style='position:relative;width:100%;height:100%'>"
-            + "               <div style='position:absolute;top:0px;left:0px;background-color:gray;filter:alpha(opacity=70);-moz-opacity: 0.7;opacity: 0.7;z-index:200;width:100%;height:100%'></div>"
-            + "               <div style='position:absolute;top:0px;margin:auto;z-index:300;width: 100%;height:500px;'>"
-            + "                        <div style='box-shadow: 0 0 10px 2px black; margin:auto;width:400px;background-color: white;padding: 40px;margin-top:100px'>"
-            + '<form>'
-            + '<input id="leaveMsgOnMv" type="checkbox">Оставлять сообщение о переносе (делает активным поле ввода текста примечания)</input><br>'
-            + '<input id="addMsgToOld" type="checkbox">Оставлять сообщение о разделении в старой теме</input><br>'
-            + '<input id="addMsgToNew" type="checkbox">Добавлять сообщение о разделении в новую тему</input><br>'
-            + '<input id="newTopicNameMode" type="checkbox">Название темы выводить цифровое значение <br>(Условие формирования названия новой темы при разделении темы <br>true - Выделено из темы + ID (цифровое значение) темы <br>false - Выделено из темы + Название темы текстом)></input><br>'
-            + 'Текст причины переноса темы в Архив:<input  style=width:350px id="textToArchive" type="text"><br>'
-            + 'Текст причины переноса темы в Темп:<input   style=width:350px id="textToTemp" type="text"><br>'
-            + '<input type="button" value="Записать" onclick="SaveSettingAndDeleteDiv(true)"> <input type="button" style="aligh:right;" value="Закрыть" onclick="SaveSettingAndDeleteDiv(false)">'
-            + '</form>'
-            + "                        </div>"
-            + "               </div>"
-            + "       </div>"
-            + "</div>";
-    document.body.appendChild(div);
-	
-    
-    if ( localStorage.testLocalStorage == undefined ){
-        localStorage.leaveMsgOnMv = true;
-        localStorage.addMsgToOld = false;
-        localStorage.addMsgToNew = true;
+    /** Выставляем настройки по-умолчанию */
+    if (localStorage.testLocalStorage === undefined){
+        /**
+         * Проверять при переносе тему на одобреность или нет.
+         * Если проверять, то тема выполняется дополнительный запрос, что может занять некоторое время,
+         * особенно при затруднениях с доступом к клубу. При этом, если тема одобрена, то для переноса выбирается
+         * профильный архив, иначе - профильный темп.
+         * Если не проверять, то всегда выбирается профильный темп.
+         */
+        localStorage.checkApproved = true;
+        /** Режим формирования названия новой темы при разделении:
+         * true -- Выделено из темы + <ID темы>, false -- Выделено из темы + <Название темы> */
         localStorage.newTopicNameMode = false;
-        localStorage.textToArchive = "На трекере доступна новая версия";
-        localStorage.textToTemp = "Нуждается в дооформлении";
+        /** Текст сообщения об отправке в архив */
+        localStorage.textToArchive = "На трекере доступна новая версия: ";
+        /** Текст сообщения об отправке в темп */
+        localStorage.textToTemp = "Нуждается в дооформлении согласно требования модератора.";
         localStorage.testLocalStorage = 1;
-    } 
+    }
 
-    document.getElementById('leaveMsgOnMv').checked = (localStorage.leaveMsgOnMv === "true");
-    document.getElementById('addMsgToOld').checked = (localStorage.addMsgToOld === "true");
-    document.getElementById('addMsgToNew').checked = (localStorage.addMsgToNew === "true");
+    var div = document.createElement('div');
+    div.innerHTML = "" +
+        "<div style='position:fixed;z-index:100;width:100%;height:100%;top:0;left:0;' id='moderator_menu'>" +
+        "    <div style='position:relative;width:100%;height:100%'>" +
+        "        <div style='position:absolute;top:0;left:0;background-color:gray;filter:alpha(opacity=70);" +
+        "                    -moz-opacity:0.7;opacity:0.7;z-index:200;width:100%;height:100%'></div>" +
+        "        <div style='position:absolute;top:0;margin:auto;z-index:300;width: 100%;height:500px;'>" +
+        "            <div style='box-shadow: 0 0 10px 2px black; min-width:400px;width:60%;background-color:white;padding:40px;margin:100px auto auto;'>" +
+        '<form>' +
+        '<input id="newTopicNameMode" type="checkbox">Выводить в название темы цифровое значение.</input><br>' +
+        '<div style="padding: 10px 0 0 25px">Условие формирования названия новой темы при разделении темы: <br>' +
+        '<strong>true</strong> - Выделено из темы + ID (цифровое значение) темы;<br>' +
+        '<strong>false</strong> - Выделено из темы + Название темы текстом.</div><br>' +
+        '<input id="checkApproved" type="checkbox">Проверять при переносе тему на одобренность.</input><br>' +
+        '<div style="padding: 10px 0 0 25px"><strong>false</strong> - не проверять, тема всегда переносится в профильный темп;<br>' +
+        '<strong>true</strong> - проверять, одобренная тема переносится в профильный архив, неодобренная - в профильный темп.<br><br>' +
+        '<strong>Важно!</strong> Для проверки на одобренность выполняется дополнительный запрос, ' +
+        'который занимает некоторое время. Выбор целевого форума произойдёт после выполнения запроса.<br>' +
+        'По-умолчанию на запрос выделяется ' + localStorage.checkTimeout + ' секунд, после чего запрос отменяется.<br>' +
+        'В условиях затруднённого доступа к клубу рекомендуется отключать проверку.<br></div><br>' +
+        '<br>' +
+        '<table width=100%>' +
+        '<tr>' +
+        '    <td width="41%" height="30px" align="left" style="font-size: medium">Текст причины переноса темы в Архив</td>' +
+        '    <td><input style="width: 90%; font-size: medium" id="textToArchive" type="text"></td>' +
+        '</tr>' +
+        '<tr>' +
+        '    <td width="41%" height="30px" align="left" style="font-size: medium">Текст причины переноса темы в Темп</td>' +
+        '    <td><input style="width: 90%; font-size: medium" id="textToTemp" type="text"></td>' +
+        '</tr>' +
+        '</table><br>' +
+        '<br>' +
+        '<table width=100%><tr>' +
+        '    <td align="left"><input type="button" value="Сохранить изменения" onclick="SaveSettingAndDeleteDiv(1)" style="background-color: #7FFF00;"></td>' +
+        '    <td align="center"><input type="button" value="Сброс настроек" onclick="SaveSettingAndDeleteDiv(2)"></td>' +
+        '    <td align="right"><input type="button" value="Закрыть без изменения" onclick="SaveSettingAndDeleteDiv(false)" style="background-color: #FF6347;"></td>' +
+        '</tr></table>' +
+        '</form>' +
+        "            </div>"+
+        "        </div>" +
+        "    </div>" +
+        "</div>";
+    document.body.appendChild(div);
+
+    document.getElementById('checkApproved').checked = (localStorage.checkApproved === "true");
     document.getElementById('newTopicNameMode').checked = (localStorage.newTopicNameMode === "true");
     document.getElementById('textToArchive').value = localStorage.textToArchive;
     document.getElementById('textToTemp').value = localStorage.textToTemp;
-
-    return null;
 }
 
-function SaveSettingAndDeleteDiv(save) {
-    if (save) {
-        localStorage.leaveMsgOnMv = document.getElementById('leaveMsgOnMv').checked;
-        localStorage.addMsgToOld = document.getElementById('addMsgToOld').checked;
-        localStorage.addMsgToNew = document.getElementById('addMsgToNew').checked;
+function SaveSettingAndDeleteDiv(i) {
+    if (i == 1) {
+        localStorage.checkApproved = document.getElementById('checkApproved').checked;
         localStorage.newTopicNameMode = document.getElementById('newTopicNameMode').checked;
         localStorage.textToArchive = document.getElementById('textToArchive').value;
         localStorage.textToTemp = document.getElementById('textToTemp').value;
         localStorage.testLocalStorage = 1;
+        location.reload();
+    } else if (i == 2) {
+        localStorage.removeItem('checkApproved');
+        localStorage.removeItem('newTopicNameMode');
+        localStorage.removeItem('textToArchive');
+        localStorage.removeItem('textToTemp');
+        localStorage.removeItem('testLocalStorage');
+        location.reload();
     }
     var div = document.getElementById('moderator_menu').parentNode;
     div.parentNode.removeChild(div);
 }
 
-var checkApprove = true; //!- проверять тему на "одобреность"? true - проверять, false - не проверять
-
-var isLoaded = false;
-
 function modHelp() {
 
     var done = false;
-    var tid = document.getElementsByName('t')[0].value;
 
+    /** Индекс категорий форума, необходим для заполнения карты форумов и списка категорий */
+    var category_index = [
+        'vip',
+        'nnm',
+        'forum',
+        'talent',
+        'exclusive',
+        'children',
+        'video',
+        'serials',
+        'docum',
+        'anime',
+        'books',
+        'music',
+        'games',
+        'soft',
+        'mobile',
+        'apple',
+        'mediadisgraf',
+        'temp'
+    ];
+
+    /** Список категорий форума вместе со списком форумов */
+    var categories = {
+        'all': category('Выберите категорию'),
+        'vip': category(),
+        'nnm': category(),
+        'forum': category(),
+        'talent': category(),
+        'exclusive': category(),
+        'children': category(),
+        'video': category(),
+        'serials': category(),
+        'docum': category(),
+        'anime': category(),
+        'books': category(),
+        'music': category(),
+        'games': category(),
+        'soft': category(),
+        'mobile': category(),
+        'apple': category(),
+        'mediadisgraf': category(),
+        'temp': category()
+    };
+
+    /** Номера темп-форумов для соответствующих категорий */
     var temp = {
         'anime': 146,
+        'apple': 1145,
         'avto': 302,
         'books': 161,
+        'cartoons': 145,
+        'classic': 145,
         'docum': 145,
         'games': 148,
         'humor': 399,
@@ -106,11 +205,14 @@ function modHelp() {
         'soft': 149,
         'tech': 932,
         'trash': 670,
+        'ts': 145,
         'video': 145
     };
 
+    /** Номера архивов для соответствующих категорий */
     var archive = {
         'anime': 169,
+        'apple': 1080,
         'avto': 303,
         'books': 94,
         'cartoons': 892,
@@ -123,179 +225,258 @@ function modHelp() {
         'music': 92,
         'music_video': 1143,
         'serials': 802,
-        'sndbx': 1068,
+        'sndbx': 95,
         'soft': 95,
         'tech': 182,
         'ts': 150,
         'video': 91
     };
 
+    /**
+     * Карта форумов для определения категории по номеру форума.
+     * Ввиду некоторой запутанности форума выделяется ещё несколько дополнительных категорий,
+     * для которых заведены свои архивы и темп-форумы. При этом они находятся внутри основных категорий.
+     * Для этого оставил их номера с ручным заполнением и поставил вперёд.
+     * Т.о. при поиске категории по номеру форума, сначала проверяются они, а потом уже основные категории.
+     */
     var map = {
-        'anime': [23, 101, 102, 107, 615, 616, 617, 619, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 642, 643, 644, 645, 646, 648, 695, 696, 1222],
         'avto': [299, 301, 300],
-        'books': [299, 300, 301, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 447, 449, 451, 452, 453, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 557, 558, 657, 662, 663, 755, 767, 815, 816, 817, 818, 875, 886, 887, 893, 895, 896, 931, 933, 957, 958, 1063, 1152, 1153, 1170, 1171, 1172, 1173, 1174, 1175, 1176, 1198, 1199, 1223, 1226, 1227],
-        'cartoon': [229, 230, 231, 232, 658, 659, 660, 661, 730, 732, 890],
-        'classic': [318, 320, 677, 319, 678, 885, 908, 909, 910, 911, 912],
-        'docum': [576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 593, 594, 595, 596, 597, 598, 599, 600, 603, 604, 605, 606, 607, 608, 609, 614, 652, 706, 713, 714, 750, 761, 806, 809, 812, 819, 823, 894, 924, 950, 951, 953, 956, 959, 974, 975, 1194, 1200],
-        'games': [36, 37, 38, 129, 268, 316, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 410, 411, 412, 413, 414, 415, 416, 417, 418, 428, 728, 740, 741, 746, 822, 848, 968, 969, 970, 971, 972, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1034, 1035, 1036, 1037, 1038, 1039, 1041, 1044, 1045, 1046, 1047, 1048, 1049, 1050, 1051, 1052,1053, 1054, 1056, 1057, 1058, 1059, 1060, 1061, 1192, 1193],
+        'cartoons': [229, 230, 231, 232, 658, 659, 660, 661, 730, 732, 890],
+        'classic': [318, 320, 677, 1177, 319, 678, 885, 908, 909, 910, 911, 912],
         'humor': [610, 611, 612, 613, 653, 654, 655, 656],
-        'mediadisgraf': [166, 267, 534, 676, 808, 988, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077, 1078, 1102, 1103, 1105, 1106, 1107, 1108, 1110, 1111, 1112, 1113, 1114, 1115, 1116, 1129, 1134, 1136, 1138, 1139, 1204],
-        'mobile': [208, 209, 210, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 837, 838, 839, 840, 841, 842, 843, 844, 1231, 1232, 1233, 1235, 1236, 1238, 1240],
-        'music': [54, 55, 56, 118, 313, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333 , 334, 336, 337, 338, 339, 340, 341, 344, 345, 346, 347, 348, 349, 352, 353, 354, 357, 358, 359, 360, 361, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 398, 429, 671, 672, 673, 674, 680, 681, 711, 824, 876, 877, 878, 879, 917, 961, 962, 963, 965, 976, 977, 978, 979, 980, 981, 982, 983, 984, 1149, 1157, 1158, 1159, 1160, 1161, 1162, 1163, 1164, 1165, 1166, 1167, 1168, 1178, 1179, 1180, 1181, 1182, 1183, 1184, 1185, 1186, 1187, 1188, 1189, 1190, 1213, 1215, 1216, 1217, 1218, 1224, 1225, 1234, 1243, 1255, 1256, 1257, 1258, 1259, 1260, 1261],
-        'music_video': [257, 258, 271, 883, 955, 1210],
-        'serials': [768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 803, 804, 922, 1140, 1141, 1142, 1144, 1195, 1196, 1219, 1220, 1221, 1242],
+        'music_video': [256, 257, 258, 271, 883, 905, 955, 1210],
         'sndbx': [1042],
-        'soft': [24, 503, 504, 506, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 529, 530, 532, 533, 535, 536, 545, 548, 549, 550, 552, 553, 554, 561, 562, 563, 564, 717, 763, 764, 765, 820, 916, 1023, 1025, 1026, 1031, 1032, 1137, 1241, 1254],
-        'tech': [47, 948],
+        'tech': [47],
         'ts': [217],
-        'video': [216, 218, 219, 220, 221, 222, 224, 225, 226, 227, 228, 254, 255, 256, 264, 265, 266, 270, 272, 321, 682, 693, 694, 882, 884, 888, 889, 891, 905, 906, 913, 954, 1150, 1211]
-
+        'anime': [],
+        'apple': [],
+        'books': [],
+        'docum': [],
+        'games': [],
+        'mediadisgraf': [],
+        'mobile': [],
+        'music': [],
+        'serials': [],
+        'soft': [],
+        'video': []
     };
 
-    var moveNotApprovedTo = temp['trash'];          //!- в этот форум переносим, если мы не узнали исходный форум и не проверяли или тема не одобрена
-    var moveApprovedTo = temp['trash'];          //!- в этот форум переносим, если мы не узнали исходный форум, но проверяли и тема одобрена
-    var splitTo = temp['trash'];          //!- в этот форум выделяем
-    var newTopicName = 'Выделено из темы ' + tid; //!- название темы при выделении, где tid -- id темы
-//  var leaveMsgOnMv      = true;                     //!- оставлять сообщение о переносе, true -- да, false -- нет
-//  var addMsgToOld       = false;                     //!- оставлять сообщение о разделении в старой теме, true -- да, false -- нет
-//  var addMsgToNew       = true;                     //!- оставлять сообщение о разделении в новой теме, true -- да, false -- нет
-//  var newTopicNameMode  = false;                    //!- Режим формирования названия новой темы при разделении, true -- Выделено из темы + ID темы, false -- Выделено из темы + <Название темы>
-//  var text1 = 'На трекере доступна новая версия';
-//  var text2 = 'Требуется доработка по замечаниям модератора';
+    /** Текущий номер темы */
+    var tid = document.getElementsByName('t')[0];
+    if (tid) tid = tid.value;
 
-    var leaveMsgOnMv = localStorage.leaveMsgOnMv;
-    //console.log('leaveMsgOnMv = ' + leaveMsgOnMv);
-    var addMsgToOld = (localStorage.addMsgToOld === 'true');
-    //console.log('addMsgToOld = ' + addMsgToOld);
-    var addMsgToNew = (localStorage.addMsgToNew === 'true');
-    //console.log('leaveMsgOnMv = ' + leaveMsgOnMv);
-    var newTopicNameMode = (localStorage.newTopicNameMode === 'true');
-    //console.log('newTopicNameMode = ' + newTopicNameMode);
-    var textToArchive = localStorage.textToArchive;
-    //console.log('textToArchive = ' + textToArchive);
-    var textToTemp = localStorage.textToTemp;
-    //console.log('textToTemp = ' + textToTemp);
-	var savedText;
-	var msgMoveElem = document.getElementById('insert_msg');
-	var msgElem = document.getElementById('move_bot');
-	var msgSplitElemOld = document.getElementById('after_split_to_old');
-	var msgSplitElemNew = document.getElementById('after_split_to_new');
+    /** В этот форум переносим, если мы не узнали исходный форум и не проверяли или тема не одобрена */
+    var moveNotApprovedTo = temp.trash;
+    /** В этот форум переносим, если мы не узнали исходный форум, но проверяли и тема одобрена */
+    var moveApprovedTo = temp.trash;
+    /** В этот форум выделяем */
+    var splitTo = temp.trash;
 
+    /** Пользователь */
+    var menuItems = document.querySelectorAll('a.mainmenu');
+    var user = menuItems[menuItems.length - 1].text.split(' ')[2];
+    /** Название темы при выделении */
+    var newTopicName = 'Выделено ' + user + ' из темы ';
+
+    /**
+     * Описание категории
+     * @param label название категории
+     * @returns {{label: (*|string), forums: Array, getForum: Function}}
+     */
+    function category(label) {
+        return {
+            label: label || '', forums: [],
+            getForum: function(id) {
+                for (var i = 0; i < this.forums.length; i++) {
+                    if (this.forums[i].id == id) {
+                        return this.forums[i];
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Описание форума
+     * @param id номер форума
+     * @param label название форума
+     * @param selected форум выбран в списке
+     * @param disbled выбор форума в списке заблокирован (переносим из этого форума)
+     * @returns {{id: *, label: *, selected: *, disabled: *}}
+     */
+    function forumObj(id, label, selected, disbled) {
+        return { id: id,  label: label, selected: selected, disabled: disbled }
+    }
+
+    /**
+     * Разбираем список форумов, разбитый по категориям, и заполняем список категорий и карту форумов
+     */
+    function parseCategories() {
+        var select = document.getElementById("optlist");
+        for (var i = 0; i < select.children.length; i++) {
+            var optgroup = select.children[i];
+            var category = categories[category_index[i]];
+            category.label = optgroup.label;
+            var forums = map[category_index[i]];
+            for (var j = 0; j < optgroup.children.length; j++) {
+                var option = optgroup.children[j];
+                var forum = forumObj(parseInt(option.value), option.text, option.selected, option.disabled);
+                category.forums.push(forum);
+                if (forums) {
+                    forums.push(forum.id);
+                }
+            }
+        }
+    }
+
+    parseCategories();
+
+    /**
+     * Строим дополнительный список только с категориями форума.
+     * При выборе категории в этом списке перестраиваем основной спискок с сокращённым набором форумов,
+     * соответствующей категории. Также добавляются архив и темп (как наиболее востребованные цели).
+     * Сразу же перестраиваем основной список с выбором всех категорий.
+     */
+    function buildCategorySelect(onMove) {
+        var categorySelect = document.createElement('select');
+        categorySelect.style.width = '300px';
+        categorySelect.id = 'categories';
+
+        for (var key in categories) {
+            if (categories.hasOwnProperty(key)) {
+                var option = document.createElement('option');
+                option.value = key;
+                option.text = categories[key].label;
+                categorySelect.appendChild(option);
+            }
+        }
+        categorySelect.selectedIndex = 0;
+        categorySelect.onchange = function () {
+            rebuildOptlist(this.selectedOptions[0].value);
+        };
+
+        var parent = document.getElementById('optlist').parentNode;
+        parent.insertBefore(categorySelect, parent.children[onMove ? 1 : 0]);
+
+        rebuildOptlist('all');
+
+        function rebuildOptlist(selectedKey) {
+            var select = document.getElementById('optlist');
+            while (select.children.length > 0) {
+                select.removeChild(select.children[0]);
+            }
+
+            if (selectedKey === 'all') {
+                for (var key in categories) {
+                    if (categories.hasOwnProperty(key) && key !== selectedKey) {
+                        select.appendChild(buildOptgroup(key));
+                    }
+                }
+            } else {
+                var forum;
+                if (temp[selectedKey]) {
+                    forum = categories.temp.getForum(temp[selectedKey]);
+                    if (forum) {
+                        select.appendChild(buildOption(forum));
+                    }
+                }
+                if (archive[selectedKey]) {
+                    forum = categories.temp.getForum(archive[selectedKey]);
+                    if (forum) {
+                        select.appendChild(buildOption(forum));
+                    }
+                }
+                select.appendChild(buildOptgroup(selectedKey));
+            }
+
+            select.style.width = '400px';
+            select.size = selectSize;
+
+            function buildOptgroup(categoryKey) {
+                var optgroup = document.createElement('optgroup');
+                var category = categories[categoryKey];
+                optgroup.label = category.label;
+                for (var i = 0; i < category.forums.length; i++) {
+                    var forum = category.forums[i];
+                    optgroup.appendChild(buildOption(forum));
+                }
+                return optgroup;
+            }
+
+            function buildOption(forum) {
+                var option = document.createElement('option');
+                option.value = forum.id;
+                option.textContent = forum.label;
+                option.selected = forum.selected;
+                option.disabled = forum.disabled;
+                return option;
+            }
+        }
+    }
+
+    var msgElem = document.getElementsByClassName('post')[0];
 
     function setTextToArchive() {
-        document.getElementsByClassName('post')[0].value = textToArchive;
+        msgElem.value = localStorage.textToArchive;
     }
 
     function setTextToTemp() {
-        document.getElementsByClassName('post')[0].value = textToTemp;
+        msgElem.value = localStorage.textToTemp;
     }
-
-    function setEmptyText() {
-        document.getElementsByClassName('post')[0].value = '';
-    }
-
-    function uncheckText() {
-		savedText=document.getElementsByClassName('post')[0].value;
-		setEmptyText();
-		msgMoveElem.onchange = function() {checkText();};
-	}
-
-    function checkText() {
-		document.getElementsByClassName('post')[0].value=savedText;
-		msgMoveElem.onchange = function() {uncheckText();};
-	}
 
     function findGroup(old) {
         for (var key in map) {
-            if (map[key].indexOf(old) > -1) {
+            if (map.hasOwnProperty(key) && map[key].indexOf(old) > -1) {
                 return key;
             }
         }
         return -1;
     }
 
-    function moveApprovedToF(old) {
+    function moveApproved(old) {
         var key = findGroup(old);
-        if (key !== -1 && typeof(archive[key]) !== 'undefined') {
-            return archive[key];
-        } else {
-            return moveApprovedTo;
-        }
+        setDest((key !== -1 && typeof(archive[key]) !== 'undefined') ? archive[key] : moveApprovedTo);
+        setTextToArchive();
     }
 
-    function moveNotApprovedToF(old) {
+    function moveNotApproved(old) {
         var key = findGroup(old);
-        if (key !== -1 && typeof(temp[key]) !== 'undefined') {
-            return temp[key];
-        } else {
-            return moveNotApprovedTo;
-        }
+        setDest((key !== -1 && typeof(temp[key]) !== 'undefined') ? temp[key] : moveNotApprovedTo);
+        setTextToTemp();
     }
 
     function setThemeName() {
-        if (newTopicNameMode) {
-            document.getElementsByName('subject')[0].value = newTopicName;
+        var subjectElem = document.getElementsByName('subject')[0];
+        if (localStorage.newTopicNameMode === 'true') {
+            subjectElem.value = newTopicName + tid;
+        } else {
+            subjectElem.value = newTopicName + document.getElementsByClassName('postdetails')[0].innerHTML.substr(32);
         }
-        else {
-            document.getElementsByName('subject')[0].value = 'Выделено из темы ' + document.getElementsByClassName('postdetails')[0].innerHTML.substr(32);
-        }
-        document.getElementsByName('subject')[0].onfocus = function() {
-            if (!done)
-                this.value = '';
+        subjectElem.onfocus = function() {
+            if (!done) this.value = '';
             done = true;
         };
     }
 
     function setDest(id) {
-        var selectElem = document.getElementsByTagName('select');
-        if (selectElem.length > 0) {
-            selectElem[0].value = id;
+        var selectElem = document.getElementById('optlist');
+        if (selectElem) {
+            selectElem.value = id;
         }
     }
 
     function onSplit() {
-        if (document.URL.indexOf('mode=split') > -1) {
-            return true;
-        } else {
-            return false;
-        }
+        return document.URL.indexOf('mode=split') > -1;
     }
 
     function onMove() {
-        if (document.URL.indexOf('mode=move') > -1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    function themeIsApproved() {
-        var approved = false;
-        $.ajax({
-            url: '/forum/viewtopic.php?t=' + tid,
-            success: function(result) {
-                if (result.isOk === false)
-                    console.debug(result.message);
-                else {
-                    approved = $('tr.row1 > td.genmed', result);
-                    if (typeof(approved) !== 'undefined' && approved.length > 11) {
-                        approved = approved[11].innerHTML.indexOf("Оформление проверено ") > -1;
-                    } else {
-                        approved = false;
-                    }
-                }
-            },
-            async: false
-        });
-        return approved;
+        return document.URL.indexOf('mode=move') > -1;
     }
 
     function isArchive(forum) {
         for (var i in archive) {
-            if (archive.hasOwnProperty(i)) { // skip inherited properties
-                if (archive[i] === forum) {
-                    return true;
-                }
+            if (archive.hasOwnProperty(i) && archive[i] === forum) {
+                return true;
             }
         }
         return false;
@@ -303,93 +484,107 @@ function modHelp() {
 
     function isTemp(forum) {
         for (var i in temp) {
-            if (temp.hasOwnProperty(i)) { // skip inherited properties
-                if (temp[i] === forum) {
-                    return true;
-                }
+            if (temp.hasOwnProperty(i) && temp[i] === forum) {
+                return true;
             }
         }
         return false;
     }
 
     function fromArchive() {
-        var formElem = Array.prototype.filter.apply(document.forms, [function(elem) {
-                return (elem && elem.action && elem.action.indexOf('modcp.php') > -1);
-            }])[0];
-        formElem.addEventListener('submit', function(e) {
+        var formElem = document.getElementsByName('confirm')[0];
+        formElem.addEventListener('click', function(e) {
             if (!confirm('Действительно хотите перенести из Архива?')) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                }
+                if (e.preventDefault) e.preventDefault();
                 e.returnValue = false;
             }
         }, false);
     }
 
-    function formUpdate(action, options) {
-        switch (action) {
-            case 'onmove':
-                if (isArchive(options.forum))
-                    fromArchive();
-                msgMoveElem.checked = leaveMsgOnMv;
-                msgElem.style.display = leaveMsgOnMv ? 'block' : 'none';
-                msgMoveElem.onchange = leaveMsgOnMv ? function() {uncheckText();} : function() {checkText();};
-                break;
-            case 'onsplit':
-                msgSplitElemOld.checked = addMsgToOld;
-                msgSplitElemNew.checked = addMsgToNew;
-                break;
-            default:
-                break;
+    function loadPage(url, onload) {
+        try {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState != 4) return;
+                clearTimeout(timeout);
+                if (xhr.status == 200) {
+                    /**
+                     * Выкусываем только тело страницы, без всяких заголовков и вычищаем все ссылки, чтобы ускорить её подгрузку.
+                     * Самому писать регулярку было лениво, нагуглил первое подходящее решение, но оно зачищает URL вместе
+                     * с закрывающими кавычками, поэтому вот такой обходной манёвр сделал.
+                     */
+                    var response = /<body[^>]*>([\s\S]+)<\/body>/i.exec(xhr.responseText + '</body></html>')[1].
+                        replace(/'(http|https):\/\/(\w+:?\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/g, '\'http://localhost/\'').
+                        replace(/"(http|https):\/\/(\w+:?\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/g, '\"http://localhost/\"');
+                    var page = document.body.appendChild(document.createElement("div"));
+                    page.style.display = 'none';
+                    page.innerHTML = response;
+                    onload(page);
+                    document.removeChild(page);
+                } else {
+                    console.log('Failed to load page ' + url + ': ' + xhr.response + ', ' + xhr.responseText);
+                }
+            };
+            var timeout = setTimeout(function () {
+                console.log('Check for approved failed due to timeout');
+                xhr.abort();
+            }, localStorage.checkTimeout * 1000);
+            xhr.send('');
+        } catch (e) {
+            console.warn('Failed to load page ' + url + ': ' + e.message);
         }
     }
 
     var oldForumElems = document.getElementsByName('f');
     var old = parseInt(oldForumElems[oldForumElems.length - 1].value);
 
-
     if (onSplit()) {
-        formUpdate('onsplit');
+        buildCategorySelect(false);
         setThemeName();
         setDest(splitTo);
     } else if (onMove()) {
-        formUpdate('onmove', {'forum': old});
-        var isApproved = themeIsApproved();
-        if (checkApprove && isApproved && isArchive(old)) {
-            setEmptyText();
-            setDest(old);
-        } else if (checkApprove && isApproved && isTemp(old)) {
-            setEmptyText();
-            setDest(old);
-        } else if (checkApprove && isApproved && !isArchive(old) && !isTemp(old)) {
-            setTextToArchive();
-            setDest(moveApprovedToF(old));
+        buildCategorySelect(true);
+        if (isArchive(old)) fromArchive();
+        if (localStorage.checkApproved || true) {
+            /**
+             * Оптимизация отзывчивости скрита. Не ждём завершения запроса, чтобы заполнить темы и выбрать форум.
+             * т.к. при проблемах с доступом к форуму может отрабатывать достаточно долго.
+             * В таком случае быстрее будет вручную выбрать нужный форум и набить сообщение.
+             */
+            loadPage('/forum/viewtopic.php?t=' + tid, function (page) {
+                var approved = page.querySelectorAll('tr.row1 > td.genmed');
+                if (approved && approved.length > 11 && approved[11].innerHTML.indexOf('Оформление проверено ') > -1) {
+                    if (isArchive(old) || isTemp(old)) {
+                        setDest(old);
+                    } else {
+                        moveApproved(old);
+                    }
+                } else {
+                    moveNotApproved(old);
+                }
+            });
         } else {
-            setTextToTemp();
-            setDest(moveNotApprovedToF(old));
+            moveNotApproved(old);
         }
+    } else {
+        /** Массовый перенос тем из раздела */
+        buildCategorySelect(true);
+        moveApproved(old);
     }
 }
 
-
-
-
-function checkJquery() {
-    if (!checkApprove) { //if we don't need jQuery
-        modHelp();
-    } else if (typeof(window.jQuery) !== 'undefined') {// Opera!
-        $ = window.jQuery;
-        modHelp();
-    } else if (typeof(unsafeWindow.jQuery) !== 'undefined') {  // Firefox!
-        $ = unsafeWindow.jQuery;
-        modHelp();
-    } else { // Chrome and others
-        var script = document.createElement("script");
-        script.textContent = "var checkApprove = " + checkApprove + ";\nvar $ = window.jQuery;\n" + "(" + modHelp.toString() + ")();";
-        document.body.appendChild(script);
-    }
+function drawInterface() {
     var div = document.createElement('div');
-    div.innerHTML = "<div style='position:absolute;z-index:100;top:14px;left:14px; id='moderator_setting'><img title='Изменить настройки скрипта модератора' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABS0lEQVRIx2NgGETABYg7oNiFFhY0APF/KG6g1DAdIGYi0QJ9Yg13AuKvQDwXyRJ+IF6MZAGILYCkpwqI/wJxPCHDtaCGwwwCWTIJiH8gicHwTyCeDMS1SGIgSzzwWcAIxFOxGEYs3gjEbIR8AQqWJVg0HwTiLig+hEV+DxBzEhsP05E0fsCRLN2A+COSumnEGi4IxL+RNHrjUeuPFicCxGSiFUiajhHhoFNI6pfjyowNOCKthwgL+nHobaCWBX3EWGADxOVQPJeCIJqDZI4NLg380AgjNZJ/4YtkdDANSeNHqEHoIBCIP5GTTEGgEUuYnoAWDZOhbHR5UOZkJsbwDgqKitVAzEKomP6DpGEXEM9Ey3gw/B2IJ6Iliv84ghMFxEAt2Y1UtoiglU+LoYkBVnbNIbUicsdScOGrcJiIcTldq0xswIaYTER3AADyDbmZw/+N1gAAAABJRU5ErkJggg==' id = 'moderator_settings_img' onclick='OpenDiv()'></img></div>";
+    div.innerHTML = "<div style='position:absolute;z-index:100;top:14px;left:14px;' id='moderator_setting'>" +
+        "<img title='Изменить настройки скрипта модератора' onclick='OpenDiv()' id='moderator_settings_img' " +
+        "src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABS0lEQV" +
+        "RIx2NgGETABYg7oNiFFhY0APF/KG6g1DAdIGYi0QJ9Yg13AuKvQDwXyRJ+IF6MZAGILYCkpwqI/wJxPCHDtaCGwwwCWTIJiH8gicHwTyC" +
+        "eDMS1SGIgSzzwWcAIxFOxGEYs3gjEbIR8AQqWJVg0HwTiLig+hEV+DxBzEhsP05E0fsCRLN2A+COSumnEGi4IxL+RNHrjUeuPFicCxGSi" +
+        "FUiajhHhoFNI6pfjyowNOCKthwgL+nHobaCWBX3EWGADxOVQPJeCIJqDZI4NLg380AgjNZJ/4YtkdDANSeNHqEHoIBCIP5GTTEGgEUuYn" +
+        "oAWDZOhbHR5UOZkJsbwDgqKitVAzEKomP6DpGEXEM9Ey3gw/B2IJ6Iliv84ghMFxEAt2Y1UtoiglU+LoYkBVnbNIbUicsdScOGrcJiIcT" +
+        "ldq0xswIaYTER3AADyDbmZw/+N1gAAAABJRU5ErkJggg=='>" +
+        "</div>";
     document.body.appendChild(div);
 
     var scriptOpenDiv = document.createElement("script");
@@ -400,20 +595,35 @@ function checkJquery() {
     scriptSaveSettingAndDeleteDiv.textContent = SaveSettingAndDeleteDiv.toString();
     document.body.appendChild(scriptSaveSettingAndDeleteDiv);
 
-
-    if (localStorage.testLocalStorage == undefined ) {
+    if (localStorage.testLocalStorage === undefined ) {
         OpenDiv();
     }
 }
+
+var isLoaded = false;
 
 function loadingHelper() {
     if (!isLoaded) {
         isLoaded = true;
         window.removeEventListener("load", loadingHelper, false);
         window.removeEventListener("DOMContentLoaded", loadingHelper, false);
-        checkJquery();
+        localStorage.checkTimeout = checkTimeout;
+        drawInterface();
+        modHelp();
     }
 }
 
 window.addEventListener('DOMContentLoaded', loadingHelper, false);
 window.addEventListener('load', loadingHelper, false);
+
+window.onerror = function(msg, url, line, col, error) {
+    // Note that col & error are new to the HTML 5 spec and may not be supported in every browser. It worked for me in Chrome.
+    var extra = !col ? '' : '\ncolumn: ' + col;
+    extra += !error ? '' : '\nerror: ' + error;
+
+    // You can view the information in an alert to see things working like this:
+    console.error("Error: " + msg + "\nurl: " + url + "\nline: " + line + extra);
+
+    // If you return true, then error alerts (like in older versions of Internet Explorer) will be suppressed.
+    return true;
+};
