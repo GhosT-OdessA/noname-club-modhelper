@@ -1,8 +1,9 @@
 // ==UserScript==
+// @run-at          document-start
 // @name            NoNaMe-Club ModHelper
 // @namespace       NoNaMe-Club.Scripts
 // @description     Замена стандартного варианта (корень Темпа) при переносе на профильные форумы. Версия с проверкой на «одобреность» темы.
-// @version         2.1.0.5
+// @version         2.1.0.6
 // @original author Kaener
 // @author          Team of co-authors NNM-Club
 // @homepage        https://github.com/GhosT-OdessA//noname-club-modhelper
@@ -293,7 +294,7 @@ function modHelp() {
                     }
                 }
             }
-        }
+        };
     }
 
     /**
@@ -305,7 +306,7 @@ function modHelp() {
      * @returns {{id: *, label: *, selected: *, disabled: *}}
      */
     function forumObj(id, label, selected, disbled) {
-        return { id: id,  label: label, selected: selected, disabled: disbled }
+        return { id: id,  label: label, selected: selected, disabled: disbled };
     }
 
     /**
@@ -515,8 +516,8 @@ function modHelp() {
                      * с закрывающими кавычками, поэтому вот такой обходной манёвр сделал.
                      */
                     var response = /<body[^>]*>([\s\S]+)<\/body>/i.exec(xhr.responseText + '</body></html>')[1].
-                        replace(/'(http|https):\/\/(\w+:?\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/g, '\'http://localhost/\'').
-                        replace(/"(http|https):\/\/(\w+:?\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/g, '\"http://localhost/\"');
+                        replace(/'(http|https):\/\/(\w+:?\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/g, '\'https://localhost/\'').
+                        replace(/"(http|https):\/\/(\w+:?\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?/g, '\"https://localhost/\"');
                     var page = document.body.appendChild(document.createElement("div"));
                     page.style.display = 'none';
                     page.innerHTML = response;
@@ -546,7 +547,7 @@ function modHelp() {
     } else if (onMove()) {
         buildCategorySelect(true);
         if (isArchive(old)) fromArchive();
-        if (localStorage.checkApproved || true) {
+        if (localStorage.checkApproved === 'true') {
             /**
              * Оптимизация отзывчивости скрита. Не ждём завершения запроса, чтобы заполнить темы и выбрать форум.
              * т.к. при проблемах с доступом к форуму может отрабатывать достаточно долго.
