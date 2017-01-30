@@ -226,7 +226,7 @@ function modHelp() {
         'music': 92,
         'music_video': 1143,
         'serials': 802,
-        'sndbx': 95,
+        'sndbx': 1068,
         'soft': 95,
         'tech': 182,
         'ts': 150,
