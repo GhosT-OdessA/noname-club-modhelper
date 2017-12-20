@@ -3,13 +3,14 @@
 // @name            NoNaMe-Club ModHelper
 // @namespace       NoNaMe-Club.Scripts
 // @description     Замена стандартного варианта (корень Темпа) при переносе на профильные форумы. Версия с проверкой на «одобреность» темы.
-// @version         2.1.0.8
+// @version         2.1.0.9
 // @original author Kaener
 // @author          Team of co-authors NNM-Club
 // @homepage        https://github.com/GhosT-OdessA/noname-club-modhelper
 // @updateURL       https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
 // @downloadURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
 // @match        *://*.nnmclub.to/forum/modcp.php*
+// @match        *://*.nnmclub.lib/forum/modcp.php*
 // @match        *://*.nnm-club.name/forum/modcp.php*
 // @match        *://*.nnm-club.me/forum/modcp.php*
 // @match        *://*.nnm-club.i2p.onion/forum/modcp.php*
@@ -50,11 +51,11 @@ function OpenDiv() {
 
     var div = document.createElement('div');
     div.innerHTML = "" +
-        "<div style='position:fixed;z-index:100;width:100%;height:100%;top:0;left:0;' id='moderator_menu'>" +
+        "<div style='position:fixed;z-index:10000;width:100%;height:100%;top:0;left:0;' id='moderator_menu'>" +
         "    <div style='position:relative;width:100%;height:100%'>" +
         "        <div style='position:absolute;top:0;left:0;background-color:gray;filter:alpha(opacity=70);" +
-        "                    -moz-opacity:0.7;opacity:0.7;z-index:200;width:100%;height:100%'></div>" +
-        "        <div style='position:absolute;top:0;margin:auto;z-index:300;width: 100%;height:500px;'>" +
+        "                    -moz-opacity:0.7;opacity:0.7;z-index:10000;width:100%;height:100%'></div>" +
+        "        <div style='position:absolute;top:0;margin:auto;z-index:10000;width: 100%;height:500px;'>" +
         "            <div style='box-shadow: 0 0 10px 2px black; min-width:400px;width:60%;background-color:white;padding:40px;margin:100px auto auto;'>" +
         '<form>' +
         '<input id="newTopicNameMode" type="checkbox">Выводить в название темы цифровое значение.</input><br>' +
@@ -396,6 +397,113 @@ function modHelp() {
         }
     }
 
+
+    /*
+     * Раздел с избранными форумами by NIK220V.
+     */
+
+    // Просто выдает список избранных
+    function getFavs(){
+        var favs = JSON.parse(localStorage.getItem('NNMModHelperFavs'));
+        if (!favs) favs = [];
+        return favs;
+    }
+
+    // Добавляет форум в список избранных
+    function appendFavourite(key){
+        var favs = getFavs();
+        if (favs.indexOf(key) < 0){
+            favs.push(key);
+            localStorage.setItem('NNMModHelperFavs', JSON.stringify(favs));
+            var prefix = 'nnmmodhelperfav', hold = document.querySelector('#'+prefix+'holder');
+            if (hold) {
+                var btn = document.createElement('button');
+                btn.id = prefix+'opt'+key;
+                btn.style.border = '1px lightblue solid';
+                btn.style.background = 'white';
+                btn.innerText =  '🌟 '+$('#optlist').find('option[value="'+key+'"]').text() + ' [ID'+key+']';
+                btn.fav = key;
+                btn.onclick = function(e){
+                    e.preventDefault();
+                    $('#optlist').val(this.fav);
+                };
+                btn.oncontextmenu = function(e){
+                    e.preventDefault();
+                    descendFavourite(this.fav);
+                };
+                hold.insertBefore(btn, document.querySelector('#'+prefix+'add'));
+            }
+        }
+    }
+
+    // Удаляет форум из списка избранных
+    function descendFavourite(key){
+        var favs = getFavs();
+        if (favs.indexOf(key) >= 0){
+            favs.splice(favs.indexOf(key), 1);
+            localStorage.setItem('NNMModHelperFavs', JSON.stringify(favs));
+            var hold = document.querySelector('#nnmmodhelperfavopt'+key);
+            if (hold) hold.remove();
+        }
+    }
+
+    // Создает элемент списка избранных
+    function showFavourites(){
+        var div = document.createElement('div'), prefix = 'nnmmodhelperfav';
+        div.style.padding = '15px';
+        div.style.border = '1px lightblue solid';
+        div.style.width = '50%';
+        div.id = prefix+'holder';
+        div.innerHTML = '<div style="  right: 25%;  position: absolute;  border-radius: 50%;  width: 22px;  height: 22px;  border: 1px lightblue solid;  text-align: center;  vertical-align: middle;  font-size: 17px;  background: lightblue;  cursor: wait;" title="Чтобы использовать избранный форум, просто нажмите на его кнопку.\r\nЧтобы удалить избранный форум, нажмите по нему правой кнопкой мыши.">?</div>';
+        var favs = getFavs();
+        var $ = window.$;
+        for (var fave in favs){
+            var fav = favs[fave];
+            var btn = document.createElement('button');
+            btn.id = prefix+'opt'+fav;
+            btn.style.border = '1px lightblue solid';
+            btn.style.background = 'white';
+            btn.innerText =  '🌟 '+$('#optlist').find('option[value="'+fav+'"]').text() + ' [ID'+fav+']';
+            btn.fav = fav;
+            btn.onclick = function(e){
+                e.preventDefault();
+                $('#optlist').val(this.fav);
+            };
+            btn.oncontextmenu = function(e){
+                e.preventDefault();
+                descendFavourite(fav);
+            };
+            div.appendChild(btn);
+        }
+        div.appendChild(document.createElement('br'));
+        var btn = document.createElement('button');
+        btn.id = prefix+'add';
+        btn.style.border = '1px lightblue solid';
+        btn.style.background = 'white';
+        btn.innerText =  '🌟 [-] Нажмите на эту кнопку, а потом выберите форум [-] 🌟';
+        btn.onclick = function(e){
+            e.preventDefault();
+            this.style.background = 'lightgreen';
+            waitForFavourite();
+        };
+        div.appendChild(btn);
+        var opt = document.querySelector('#optlist');
+        opt.parentNode.insertBefore(div, opt.nextSibling);
+    }
+
+    // Две функции, для добавления новых избранных форумов по клику на кнопку
+    function waitForFavourite(){
+        document.querySelector('#optlist').addEventListener('change', acceptChange);
+    }
+    function acceptChange(event){
+        document.querySelector('#optlist').removeEventListener('change', acceptChange);
+        document.querySelector('#nnmmodhelperfavadd').style.background = 'white';
+        var opt = parseInt(document.querySelector('#optlist').value);
+        appendFavourite(opt);
+    }
+
+    /* Конец раздела с закладками */
+
     var msgElem = document.getElementsByClassName('post')[0];
 
     function setTextToArchive() {
@@ -554,11 +662,14 @@ function modHelp() {
         buildCategorySelect(true);
         moveApproved(old);
     }
+
+    // Добавление эелементов закладкохелпера.
+    showFavourites();
 }
 
 function drawInterface() {
     var div = document.createElement('div');
-    div.innerHTML = "<div style='position:absolute;z-index:100;top:14px;left:14px;' id='moderator_setting'>" +
+    div.innerHTML = "<div style='position:absolute;z-index:10000;top:14px;left:14px;' id='moderator_setting'>" +
         "<img title='Изменить настройки скрипта модератора' onclick='OpenDiv()' id='moderator_settings_img' " +
         "src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABS0lEQV" +
         "RIx2NgGETABYg7oNiFFhY0APF/KG6g1DAdIGYi0QJ9Yg13AuKvQDwXyRJ+IF6MZAGILYCkpwqI/wJxPCHDtaCGwwwCWTIJiH8gicHwTyC" +
