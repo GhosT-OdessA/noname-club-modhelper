@@ -3,7 +3,7 @@
 // @name            NoNaMe-Club ModHelper
 // @namespace       NoNaMe-Club.Scripts
 // @description     Замена стандартного варианта (корень Темпа) при переносе на профильные форумы. Версия с проверкой на «одобреность» темы.
-// @version         2.1.0.10
+// @version         2.1.0.11
 // @original author Kaener
 // @author          Team of co-authors NNM-Club
 // @homepage        https://github.com/GhosT-OdessA/noname-club-modhelper
@@ -132,6 +132,7 @@ function modHelp() {
         'talent',
         'exclusive',
         'children',
+        'soft',
         'video',
         'serials',
         'docum',
@@ -139,7 +140,6 @@ function modHelp() {
         'books',
         'music',
         'games',
-        'soft',
         'mobile',
         'apple',
         'mediadisgraf',
@@ -155,6 +155,7 @@ function modHelp() {
         'talent': category(),
         'exclusive': category(),
         'children': category(),
+        'soft': category(),
         'video': category(),
         'serials': category(),
         'docum': category(),
@@ -162,7 +163,6 @@ function modHelp() {
         'books': category(),
         'music': category(),
         'games': category(),
-        'soft': category(),
         'mobile': category(),
         'apple': category(),
         'mediadisgraf': category(),
