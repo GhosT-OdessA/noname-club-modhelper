@@ -10,6 +10,7 @@
 // @updateURL       https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.meta.js
 // @downloadURL     https://github.com/GhosT-OdessA/noname-club-modhelper/raw/master/modhelper_full.appr.user.js
 // @match        *://*.nnmclub.to/forum/modcp.php*
+// @match        *://*.nnmclub.ro/forum/modcp.php*
 // @match        *://*.nnmclub.tv/forum/modcp.php*
 // @match        *://*.nnm-club.lib/forum/modcp.php*
 // @match        *://*.nnm-club.name/forum/modcp.php*
